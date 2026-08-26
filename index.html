@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#fffaf7" />
+  <meta name="description" content="Leal Festas & Decorações — kits, decoração, balões, estrutura e serviços para sua festa." />
+  <title>Leal | Festas & Decorações</title>
+  <link rel="icon" href="public/images/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div id="entryCelebration" class="entry-celebration" aria-hidden="true">
+    <div class="entry-brand">
+      <span class="brand-script">Leal</span>
+      <span>Festas & Decorações</span>
+    </div>
+    <div class="balloon balloon-a"></div>
+    <div class="balloon balloon-b"></div>
+    <div class="balloon balloon-c"></div>
+  </div>
+
+  <div id="confettiLayer" class="confetti-layer" aria-hidden="true"></div>
+
+  <header class="site-header" id="topo">
+    <div class="container header-inner">
+      <a class="brand" href="#topo" aria-label="Leal Festas e Decorações">
+        <span class="brand-script">Leal</span>
+        <span class="brand-subtitle">Festas & Decorações</span>
+      </a>
+      <nav class="desktop-nav" aria-label="Navegação principal">
+        <a href="#catalogo">Catálogo</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#sobre">Sobre</a>
+        <a href="#contato">Contato</a>
+      </nav>
+      <div class="header-actions">
+        <button id="favoritesBtn" class="icon-btn" aria-label="Abrir favoritos" title="Favoritos">
+          <span>♡</span><strong id="favoritesCount">0</strong>
+        </button>
+        <button id="cartBtn" class="cart-pill" aria-label="Abrir carrinho de orçamento">
+          <span>🛒</span><span>Carrinho</span><strong id="cartCount">0</strong>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-decor hero-decor-left" aria-hidden="true"></div>
+      <div class="hero-decor hero-decor-right" aria-hidden="true"></div>
+      <div class="container hero-grid">
+        <div class="hero-copy reveal">
+          <span class="eyebrow">Sua festa completa em um só lugar</span>
+          <h1>Momentos especiais merecem uma decoração à altura.</h1>
+          <p>Escolha kits, balões, mobiliário, estrutura e serviços. Monte seu orçamento do seu jeito e fale com a gente pelo WhatsApp.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#catalogo">Ver catálogo</a>
+            <button class="btn btn-secondary" id="heroWhatsappBtn">Pedir orçamento</button>
+          </div>
+          <div class="hero-trust">
+            <span>✓ Atendimento personalizado</span>
+            <span>✓ Orçamento sem compromisso</span>
+            <span>✓ Soluções completas</span>
+          </div>
+        </div>
+        <div class="hero-showcase reveal" aria-label="Destaque visual da Leal Festas">
+          <div class="showcase-card main-showcase">
+            <img src="public/images/demo/hero-festa.svg" alt="Espaço reservado para foto profissional de uma decoração Leal" />
+            <div class="showcase-label"><span>Seu evento</span><strong>do seu jeito ✨</strong></div>
+          </div>
+          <div class="floating-badge badge-one">🎈 Balões</div>
+          <div class="floating-badge badge-two">🎂 Kits</div>
+          <div class="floating-badge badge-three">🎨 Serviços</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="quick-categories" aria-label="Categorias">
+      <div class="container category-strip" id="quickCategories"></div>
+    </section>
+
+    <section class="catalog-section section" id="catalogo">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div>
+            <span class="eyebrow">Catálogo</span>
+            <h2>Monte a festa que você imaginou</h2>
+          </div>
+          <p>Adicione o que quiser ao carrinho. Você só envia para orçamento no final — sem pagamento e sem compromisso.</p>
+        </div>
+
+        <div class="catalog-toolbar reveal">
+          <div class="filter-scroll" id="categoryFilters"></div>
+          <label class="search-box">
+            <span>⌕</span>
+            <input id="searchInput" type="search" placeholder="Buscar kit, balões, serviço..." autocomplete="off" />
+          </label>
+        </div>
+
+        <div id="catalogGrid" class="catalog-grid" aria-live="polite"></div>
+        <div id="emptyState" class="empty-state" hidden>
+          <div>🎈</div>
+          <h3>Nada encontrado por aqui.</h3>
+          <p>Tente outro nome ou categoria.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="how-section section" id="como-funciona">
+      <div class="container">
+        <div class="section-heading centered reveal">
+          <span class="eyebrow">Simples do começo ao fim</span>
+          <h2>Você escolhe. A gente ajuda a fazer acontecer.</h2>
+        </div>
+        <div class="steps-grid">
+          <article class="step-card reveal"><span>01</span><div class="step-icon">🎂</div><h3>Escolha</h3><p>Navegue pelos kits, estruturas e serviços disponíveis.</p></article>
+          <article class="step-card reveal"><span>02</span><div class="step-icon">🛒</div><h3>Monte</h3><p>Adicione ao carrinho tudo o que deseja incluir no orçamento.</p></article>
+          <article class="step-card reveal"><span>03</span><div class="step-icon">💬</div><h3>Envie</h3><p>Informe data e local e mande o pedido pronto pelo WhatsApp.</p></article>
+          <article class="step-card reveal"><span>04</span><div class="step-icon">✨</div><h3>Comemore</h3><p>Alinhamos disponibilidade, detalhes e a melhor solução para sua festa.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-section section" id="sobre">
+      <div class="container about-grid">
+        <div class="about-visual reveal">
+          <img src="public/images/demo/sobre.svg" alt="Espaço reservado para foto de uma festa realizada" loading="lazy" />
+          <div class="about-stamp">Feito com carinho<br><strong>para celebrar</strong></div>
+        </div>
+        <div class="about-copy reveal">
+          <span class="eyebrow">Leal Festas & Decorações</span>
+          <h2>Mais praticidade para você aproveitar o que realmente importa.</h2>
+          <p>Reunimos decoração e serviços complementares para facilitar a organização do seu evento. Em vez de lidar com vários contatos, você centraliza seu pedido e recebe uma solução mais completa.</p>
+          <div class="feature-list">
+            <div><span>✦</span><p><strong>Catálogo em evolução</strong><br />Novos temas, itens e serviços entram conforme ficam disponíveis.</p></div>
+            <div><span>✦</span><p><strong>Parceiros selecionados</strong><br />Estrutura e serviços complementares podem ser fornecidos com parceiros.</p></div>
+            <div><span>✦</span><p><strong>Atendimento humano</strong><br />O carrinho organiza seu pedido; os detalhes finais são tratados diretamente com a gente.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section section" id="contato">
+      <div class="container cta-box reveal">
+        <div>
+          <span class="eyebrow light">Vamos planejar sua festa?</span>
+          <h2>Escolha seus favoritos ou monte um carrinho completo.</h2>
+          <p>Quando estiver pronto, envie tudo em uma única mensagem.</p>
+        </div>
+        <div class="cta-actions">
+          <button class="btn btn-light" id="ctaCartBtn">Abrir carrinho</button>
+          <button class="btn btn-outline-light" id="ctaWhatsappBtn">Falar no WhatsApp</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <span class="brand-script">Leal</span>
+        <span>Festas & Decorações</span>
+        <p>Decoração, estrutura e serviços para momentos especiais.</p>
+      </div>
+      <div><strong>Navegação</strong><a href="#catalogo">Catálogo</a><a href="#como-funciona">Como funciona</a><a href="#sobre">Sobre</a></div>
+      <div><strong>Contato</strong><button class="footer-link" id="footerWhatsappBtn">WhatsApp</button><a id="instagramLink" href="#" target="_blank" rel="noopener">Instagram</a><span id="serviceArea">Consulte nossa área de atendimento</span></div>
+    </div>
+    <div class="container footer-bottom"><span>© <span id="year"></span> Leal Festas & Decorações.</span><span>Catálogo sujeito a disponibilidade.</span></div>
+  </footer>
+
+  <button id="floatingCart" class="floating-cart" aria-label="Abrir carrinho">
+    <span class="floating-cart-icon">🛒</span>
+    <span><strong id="floatingCartCount">0</strong> itens</span>
+  </button>
+
+  <aside id="cartDrawer" class="drawer" aria-hidden="true">
+    <div class="drawer-backdrop" data-close-drawer></div>
+    <div class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+      <div class="drawer-header"><div><span class="eyebrow">Seu orçamento</span><h2 id="cartTitle">Carrinho</h2></div><button class="close-btn" data-close-drawer aria-label="Fechar">×</button></div>
+      <div id="cartItems" class="cart-items"></div>
+      <div id="cartEmpty" class="cart-empty"><div>🛒</div><h3>Seu carrinho está vazio</h3><p>Adicione kits e serviços para montar seu orçamento.</p><button class="btn btn-secondary" data-close-drawer>Continuar escolhendo</button></div>
+      <div id="cartFooter" class="cart-footer" hidden>
+        <div class="cart-summary"><span>Itens selecionados</span><strong id="cartTotalItems">0</strong></div>
+        <p class="cart-note">Os valores exibidos são referências e podem variar conforme data, local, quantidade e disponibilidade.</p>
+        <button id="checkoutBtn" class="btn btn-primary btn-full">Finalizar orçamento 🎉</button>
+        <button id="clearCartBtn" class="text-btn">Limpar carrinho</button>
+      </div>
+    </div>
+  </aside>
+
+  <aside id="favoritesDrawer" class="drawer" aria-hidden="true">
+    <div class="drawer-backdrop" data-close-favorites></div>
+    <div class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="favoritesTitle">
+      <div class="drawer-header"><div><span class="eyebrow">Salvos</span><h2 id="favoritesTitle">Favoritos</h2></div><button class="close-btn" data-close-favorites aria-label="Fechar">×</button></div>
+      <div id="favoritesItems" class="favorites-items"></div>
+      <div id="favoritesEmpty" class="cart-empty"><div>♡</div><h3>Nenhum favorito ainda</h3><p>Toque no coração dos itens que quiser comparar depois.</p></div>
+      <div id="favoritesFooter" class="cart-footer" hidden><button id="addAllFavoritesBtn" class="btn btn-primary btn-full">Adicionar todos ao carrinho</button></div>
+    </div>
+  </aside>
+
+  <div id="productModal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-product></div>
+    <div class="product-modal-card" role="dialog" aria-modal="true" aria-labelledby="productModalTitle">
+      <button class="close-btn modal-close" data-close-product aria-label="Fechar">×</button>
+      <div class="product-gallery">
+        <div class="product-main-image"><img id="modalImage" src="" alt="" /></div>
+        <div id="modalThumbs" class="modal-thumbs"></div>
+      </div>
+      <div class="product-modal-copy">
+        <div class="product-modal-top"><span id="modalCategory" class="category-tag"></span><button id="modalFavoriteBtn" class="favorite-large" aria-label="Favoritar">♡</button></div>
+        <h2 id="productModalTitle"></h2>
+        <p id="modalDescription" class="modal-description"></p>
+        <div id="modalIncludesWrap"><h3>O que inclui</h3><ul id="modalIncludes" class="includes-list"></ul></div>
+        <div class="modal-price-row"><div><span>A partir de</span><strong id="modalPrice"></strong></div><span class="availability-dot">● Consulte disponibilidade</span></div>
+        <button id="modalAddBtn" class="btn btn-primary btn-full">+ Adicionar ao orçamento</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="checkoutModal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-checkout></div>
+    <div class="checkout-card" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+      <button class="close-btn modal-close" data-close-checkout aria-label="Fechar">×</button>
+      <div class="checkout-head"><span class="eyebrow">Quase pronto</span><h2 id="checkoutTitle">Complete seu pedido</h2><p>Essas informações entram junto com o carrinho na mensagem.</p></div>
+      <form id="checkoutForm" class="checkout-form">
+        <label>Seu nome<input name="nome" required placeholder="Ex.: Juliana" /></label>
+        <label>Telefone para retorno<input name="telefone" inputmode="tel" placeholder="(21) 99999-9999" /></label>
+        <div class="form-row"><label>Data da festa<input name="data" type="date" /></label><label>Cidade / bairro<input name="local" placeholder="Ex.: Centro" /></label></div>
+        <label>Observações<textarea name="observacoes" rows="3" placeholder="Tema, horário, quantidade de convidados ou qualquer detalhe importante..."></textarea></label>
+        <div class="checkout-actions">
+          <button type="submit" class="btn btn-whatsapp">Enviar pelo WhatsApp</button>
+          <button type="button" id="emailOrderBtn" class="btn btn-secondary">Enviar por e-mail</button>
+          <button type="button" id="copyOrderBtn" class="text-btn">Copiar resumo do pedido</button>
+        </div>
+        <p id="configWarning" class="config-warning" hidden>⚙️ Antes de publicar, configure seu WhatsApp e e-mail em <strong>js/config.js</strong>.</p>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/config.js"></script>
+  <script src="data/catalogo.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

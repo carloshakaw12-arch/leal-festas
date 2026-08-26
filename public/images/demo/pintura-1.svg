@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900">
+    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f2dfc4"/><stop offset="1" stop-color="#fff8f4"/></linearGradient></defs>
+    <rect width="1200" height="900" fill="url(#g)"/><circle cx="970" cy="160" r="170" fill="#b67d8f" opacity=".18"/><circle cx="1020" cy="120" r="85" fill="#fff" opacity=".35"/>
+    <path d="M0 740 C240 600 370 830 620 690S980 570 1200 710V900H0Z" fill="#fff" opacity=".58"/>
+    <g fill="#b67d8f" opacity=".75"><circle cx="160" cy="170" r="58"/><circle cx="235" cy="130" r="42"/><circle cx="265" cy="205" r="53"/></g>
+    <g font-family="Arial,Helvetica,sans-serif" text-anchor="middle"><text x="600" y="410" font-size="58" letter-spacing="8" font-weight="700" fill="#59484b">PINTURA FACIAL</text><text x="600" y="470" font-size="28" letter-spacing="4" fill="#806f72">Serviço</text><text x="600" y="530" font-size="18" letter-spacing="3" fill="#9b898b">SUBSTITUA PELA FOTO REAL</text></g>
+    </svg>

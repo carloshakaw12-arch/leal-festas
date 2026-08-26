@@ -1,0 +1,2 @@
+Nesta pasta podemos adicionar depois uma ferramenta local para preparar fotos automaticamente.
+Por enquanto, preserve os originais fora do GitHub e exporte WebP em alta qualidade antes de publicar.
