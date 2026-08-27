@@ -53,7 +53,7 @@
             <span class="eyebrow">Catálogo</span>
             <h2>Monte a festa que você imaginou</h2>
           </div>
-          <p>Adicione o que quiser ao carrinho. Você só envia para orçamento no final — sem pagamento e sem compromisso.</p>
+          <p>Adicione o que quiser ao carrinho. Você só envia para orçamento no final — sem compromisso.</p>
         </div>
 
         <div class="catalog-toolbar reveal">
@@ -130,7 +130,7 @@
         <p>Decoração, estrutura e serviços para momentos especiais.</p>
       </div>
       <div><strong>Navegação</strong><a href="#catalogo">Catálogo</a><a href="#como-funciona">Como funciona</a><a href="#sobre">Sobre</a></div>
-      <div><strong>Contato</strong><button class="footer-link" id="footerWhatsappBtn">WhatsApp</button><a id="instagramLink" href="#" target="_blank" rel="noopener">Instagram</a><span id="serviceArea">Consulte nossa área de atendimento</span></div>
+      <div><strong>Contato</strong><button class="footer-link" id="footerWhatsappBtn">WhatsApp</button><a id="instagramLink" href="https://www.instagram.com/lealdcoracao/" target="_blank" rel="noopener">Instagram</a><a id="emailLink" href="mailto:lealmirielen@gmail.com">lealmirielen@gmail.com</a><span id="serviceArea">Guapimirim - RJ</span></div>
     </div>
     <div class="container footer-bottom"><span>© <span id="year"></span> Leal D’Coração — Festas & Decorações.</span><span>Catálogo sujeito a disponibilidade.</span></div>
   </footer>
@@ -177,7 +177,8 @@
         <div class="product-modal-top"><span id="modalCategory" class="category-tag"></span><button id="modalFavoriteBtn" class="favorite-large" aria-label="Favoritar">♡</button></div>
         <h2 id="productModalTitle"></h2>
         <p id="modalDescription" class="modal-description"></p>
-        <div id="modalIncludesWrap"><h3>O que inclui</h3><ul id="modalIncludes" class="includes-list"></ul></div>
+        <div id="modalIncludesWrap" class="includes-panel"><div class="includes-panel-title"><span>✓</span><h3>O que está incluso</h3></div><ul id="modalIncludes" class="includes-list"></ul></div>
+        <div id="modalComplementsWrap" class="complements-panel" hidden><div class="complements-head"><div><span class="eyebrow">Complete sua festa</span><h3>Combine com</h3></div></div><div id="modalComplements" class="complements-grid"></div></div>
         <div class="modal-price-row"><div><span>A partir de</span><strong id="modalPrice"></strong></div><span class="availability-dot">● Consulte disponibilidade</span></div>
         <button id="modalAddBtn" class="btn btn-primary btn-full">+ Adicionar ao orçamento</button>
       </div>
@@ -189,6 +190,7 @@
 
   <script src="js/config.js"></script>
   <script src="data/catalogo.js"></script>
+  <script src="js/analytics.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

@@ -30,7 +30,7 @@
     els.form.hidden=!p; els.empty.hidden=!!p;
     if(!p) return;
     els.editorName.textContent=p.nome||'Produto';
-    $('#nome').value=p.nome||''; $('#id').value=p.id||''; $('#categoria').value=p.categoria||'kits'; $('#preco').value=p.preco??0; $('#unidade').value=p.unidade||''; $('#descricao').value=p.descricao||''; $('#inclui').value=(p.inclui||[]).join('\n');
+    $('#nome').value=p.nome||''; $('#id').value=p.id||''; $('#categoria').value=p.categoria||'kits'; $('#preco').value=p.preco??0; $('#unidade').value=p.unidade||''; $('#descricao').value=p.descricao||''; $('#inclui').value=(p.inclui||[]).join('\n'); $('#complementos').value=(p.complementos||[]).join('\n');
     $('#ativo').checked=p.ativo!==false; $('#destaque').checked=!!p.destaque; $('#demo').checked=!!p.demo;
     renderPhotos(p.imagens||[]);
     els.status.textContent='Edite e salve o item.';
@@ -53,7 +53,7 @@
     e?.preventDefault(); const p=current(); if(!p) return;
     const oldId=p.id; const newId=$('#id').value.trim()||slug($('#nome').value)||`item-${Date.now()}`;
     if(products.some(x=>x!==p&&x.id===newId)){ toast('Já existe outro item com esse ID'); return; }
-    p.id=newId; p.nome=$('#nome').value.trim()||'Novo item'; p.categoria=$('#categoria').value; p.categoriaNome=CAT_NAMES[p.categoria]||p.categoria; p.preco=Number($('#preco').value||0); p.unidade=$('#unidade').value.trim()||'item'; p.descricao=$('#descricao').value.trim(); p.inclui=$('#inclui').value.split('\n').map(x=>x.trim()).filter(Boolean); p.ativo=$('#ativo').checked; p.destaque=$('#destaque').checked; p.demo=$('#demo').checked; p.imagens=collectPhotos();
+    p.id=newId; p.nome=$('#nome').value.trim()||'Novo item'; p.categoria=$('#categoria').value; p.categoriaNome=CAT_NAMES[p.categoria]||p.categoria; p.preco=Number($('#preco').value||0); p.unidade=$('#unidade').value.trim()||'item'; p.descricao=$('#descricao').value.trim(); p.inclui=$('#inclui').value.split('\n').map(x=>x.trim()).filter(Boolean); p.complementos=$('#complementos').value.split('\n').map(x=>x.trim()).filter(Boolean); p.ativo=$('#ativo').checked; p.destaque=$('#destaque').checked; p.demo=$('#demo').checked; p.imagens=collectPhotos();
     selected=p.id; persist(); renderList(); renderEditor(); els.status.textContent='Alterações salvas no rascunho local.'; toast('Item salvo ✓');
   }
 
@@ -64,15 +64,73 @@
   function remove(){ const p=current(); if(!p)return; if(!confirm(`Excluir “${p.nome}” do catálogo local?`))return; products=products.filter(x=>x.id!==p.id); selected=products[0]?.id||null; persist(); renderList(); renderEditor(); toast('Item removido'); }
 
   function cleanProduct(p){
-    const out={id:p.id,nome:p.nome,categoria:p.categoria,categoriaNome:p.categoriaNome||CAT_NAMES[p.categoria]||p.categoria,preco:Number(p.preco||0),unidade:p.unidade||'item',destaque:!!p.destaque,ativo:p.ativo!==false,demo:!!p.demo,descricao:p.descricao||'',inclui:Array.isArray(p.inclui)?p.inclui:[],imagens:(p.imagens||[]).map(img=>{const x={};if(img.src)x.src=img.src;if(img.alt)x.alt=img.alt;if(img.variantes&&Object.keys(img.variantes).length)x.variantes=img.variantes;return x;})}; return out;
+    const out={id:p.id,nome:p.nome,categoria:p.categoria,categoriaNome:p.categoriaNome||CAT_NAMES[p.categoria]||p.categoria,preco:Number(p.preco||0),unidade:p.unidade||'item',destaque:!!p.destaque,ativo:p.ativo!==false,demo:!!p.demo,descricao:p.descricao||'',inclui:Array.isArray(p.inclui)?p.inclui:[],complementos:Array.isArray(p.complementos)?p.complementos:[],imagens:(p.imagens||[]).map(img=>{const x={};if(img.src)x.src=img.src;if(img.alt)x.alt=img.alt;if(img.variantes&&Object.keys(img.variantes).length)x.variantes=img.variantes;return x;})}; return out;
   }
   function catalogText(){ return `// Catálogo gerado pelo Leal D’Coração Admin em ${new Date().toLocaleString('pt-BR')}\n// Para esconder um item: ativo: false | Para destacar: destaque: true\nwindow.LEAL_CATALOGO = ${JSON.stringify(products.map(cleanProduct),null,2)};\n`; }
   function download(){ const blob=new Blob([catalogText()],{type:'text/javascript;charset=utf-8'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='catalogo.js';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('catalogo.js baixado'); }
   async function copy(){ try{await navigator.clipboard.writeText(catalogText());toast('Catálogo copiado');}catch{toast('Não foi possível copiar');} }
   function reset(){ if(!confirm('Descartar o rascunho local e recarregar o catálogo atual do site?'))return; products=structuredCloneSafe(SOURCE); selected=products[0]?.id||null; localStorage.removeItem(DRAFT_KEY); renderList(); renderEditor(); toast('Catálogo recarregado'); }
 
+  function setOptimizerStatus(message, type='working'){
+    const box=$('#optimizerStatus'); if(!box)return; box.hidden=false; box.className=`optimizer-status ${type}`; box.textContent=message;
+  }
+  function baseName(name='foto'){
+    return slug(name.replace(/\.[^.]+$/,'')) || `foto-${Date.now()}`;
+  }
+  async function bitmapFromFile(file){
+    try { return await createImageBitmap(file,{imageOrientation:'from-image'}); }
+    catch { return await createImageBitmap(file); }
+  }
+  async function resizeWebp(file, targetWidth, quality=.92){
+    const bitmap=await bitmapFromFile(file);
+    const width=targetWidth;
+    const height=Math.round(bitmap.height*(width/bitmap.width));
+    const canvas=document.createElement('canvas'); canvas.width=width; canvas.height=height;
+    const ctx=canvas.getContext('2d',{alpha:false}); ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high'; ctx.drawImage(bitmap,0,0,width,height); bitmap.close?.();
+    return await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Falha ao gerar WebP')),'image/webp',quality));
+  }
+  async function nestedDirectory(root, parts){
+    let dir=root; for(const part of parts) dir=await dir.getDirectoryHandle(part,{create:true}); return dir;
+  }
+  async function writeBlob(dir,name,blob){
+    const handle=await dir.getFileHandle(name,{create:true}); const writable=await handle.createWritable(); await writable.write(blob); await writable.close();
+  }
+  function downloadBlob(name,blob){
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1200);
+  }
+  async function optimizeOriginals(files){
+    const p=current(); if(!p||!files.length)return;
+    const safeId=slug(p.id||p.nome)||`produto-${Date.now()}`;
+    let rootHandle=null, directSave=false;
+    if('showDirectoryPicker' in window){
+      try { rootHandle=await window.showDirectoryPicker({mode:'readwrite'}); directSave=true; }
+      catch(err){ if(err?.name==='AbortError'){ setOptimizerStatus('Operação cancelada. Nenhum arquivo foi alterado.','error'); return; } }
+    }
+    const dest=directSave ? await nestedDirectory(rootHandle,['public','images','catalogo',safeId]) : null;
+    const generated=[];
+    for(let index=0; index<files.length; index++){
+      const file=files[index]; setOptimizerStatus(`Otimizando ${index+1} de ${files.length}: ${file.name}…`,'working');
+      const probe=await bitmapFromFile(file); const originalWidth=probe.width; probe.close?.();
+      const base=`${String(index+1).padStart(2,'0')}-${baseName(file.name)}`;
+      const variants={};
+      for(const [key,width] of [['sm',800],['md',1800],['xl',2560]]){
+        if(originalWidth < width && key!=='sm') continue;
+        const outputWidth=Math.max(1, Math.min(width, originalWidth));
+        const blob=await resizeWebp(file,outputWidth,.92);
+        const filename=`${base}-${width}.webp`;
+        if(directSave) await writeBlob(dest,filename,blob); else downloadBlob(filename,blob);
+        variants[key]=`public/images/catalogo/${safeId}/${filename}`;
+      }
+      generated.push({alt:`${p.nome} — foto ${index+1}`,variantes:variants});
+    }
+    p.imagens=[...(p.imagens||[]),...generated]; p.demo=false; persist(); renderPhotos(p.imagens); renderList();
+    setOptimizerStatus(directSave ? `Pronto: ${generated.length} foto(s) otimizadas e gravadas diretamente em public/images/catalogo/${safeId}/. Os caminhos já foram adicionados ao produto.` : `Pronto: ${generated.length} foto(s) processadas. Como o navegador não permitiu gravação direta, os WebP foram baixados. Mova-os para public/images/catalogo/${safeId}/ antes de publicar.`,'done');
+    toast('Fotos otimizadas ✓');
+  }
+
   $('#productForm').onsubmit=saveCurrent; $('#newBtn').onclick=addNew; $('#moveUpBtn').onclick=()=>move(-1); $('#moveDownBtn').onclick=()=>move(1); $('#deleteBtn').onclick=remove; $('#downloadBtn').onclick=download; $('#copyBtn').onclick=copy; $('#resetBtn').onclick=reset;
   $('#addPhotoBtn').onclick=()=>{ const p=current(); if(!p)return; p.imagens=p.imagens||[]; p.imagens.push({src:'',alt:p.nome||''}); persist(); renderPhotos(p.imagens); };
+  $('#optimizePhotoBtn').onclick=()=>$('#optimizeFileInput').click(); $('#optimizeFileInput').onchange=async e=>{ const files=[...e.target.files]; e.target.value=''; try{await optimizeOriginals(files);}catch(err){console.error(err);setOptimizerStatus(`Erro ao otimizar: ${err.message||err}`,'error');toast('Erro ao otimizar fotos');} };
   $('#nome').addEventListener('input',()=>{ const id=$('#id'); if(id.value.startsWith('novo-item-')) id.value=slug($('#nome').value); });
 
   renderList(); renderEditor();

@@ -1,6 +1,12 @@
 (() => {
   const CONFIG = window.LEAL_CONFIG || {};
+  const ANALYTICS = window.LEAL_ANALYTICS || {};
   const BRAND_NAME = 'Leal D’Coração — Festas & Decorações';
+  const PUBLIC_CONTACT = {
+    instagram: 'https://www.instagram.com/lealdcoracao/',
+    email: 'lealmirielen@gmail.com',
+    area: 'Guapimirim - RJ'
+  };
   const PRODUCTS = (window.LEAL_CATALOGO || []).filter(p => p.ativo !== false);
   const STORAGE = { cart: 'leal_cart_v1', favorites: 'leal_favorites_v1', intro: 'leal_intro_seen_v2' };
   const CATEGORY_META = {
@@ -19,7 +25,7 @@
     catalog: $('#catalogGrid'), empty: $('#emptyState'), categoryFilters: $('#categoryFilters'), quickCategories: $('#quickCategories'), search: $('#searchInput'),
     cartBtn: $('#cartBtn'), cartDrawer: $('#cartDrawer'), cartItems: $('#cartItems'), cartEmpty: $('#cartEmpty'), cartFooter: $('#cartFooter'), cartCount: $('#cartCount'), floatingCart: $('#floatingCart'), floatingCount: $('#floatingCartCount'), cartTotalItems: $('#cartTotalItems'),
     favoritesBtn: $('#favoritesBtn'), favoritesDrawer: $('#favoritesDrawer'), favoritesItems: $('#favoritesItems'), favoritesEmpty: $('#favoritesEmpty'), favoritesFooter: $('#favoritesFooter'), favoritesCount: $('#favoritesCount'),
-    productModal: $('#productModal'), modalImage: $('#modalImage'), modalThumbs: $('#modalThumbs'), modalCategory: $('#modalCategory'), modalTitle: $('#productModalTitle'), modalDescription: $('#modalDescription'), modalIncludes: $('#modalIncludes'), modalIncludesWrap: $('#modalIncludesWrap'), modalPrice: $('#modalPrice'), modalFavorite: $('#modalFavoriteBtn'), modalAdd: $('#modalAddBtn'),
+    productModal: $('#productModal'), modalImage: $('#modalImage'), modalThumbs: $('#modalThumbs'), modalCategory: $('#modalCategory'), modalTitle: $('#productModalTitle'), modalDescription: $('#modalDescription'), modalIncludes: $('#modalIncludes'), modalIncludesWrap: $('#modalIncludesWrap'), modalComplements: $('#modalComplements'), modalComplementsWrap: $('#modalComplementsWrap'), modalPrice: $('#modalPrice'), modalFavorite: $('#modalFavoriteBtn'), modalAdd: $('#modalAddBtn'),
     toast: $('#toast')
   };
 
@@ -33,6 +39,19 @@
   function cartUnits() { return Object.values(cart).reduce((sum, q) => sum + Number(q || 0), 0); }
   function isConfigured(value) { return value && !String(value).includes('SEU_'); }
   function setBodyLock() { const anyOpen = $$('.drawer[aria-hidden="false"], .modal[aria-hidden="false"]').length > 0; document.body.classList.toggle('no-scroll', anyOpen); }
+
+  function initMetaPixel() {
+    const id = String(ANALYTICS.metaPixelId || '').trim();
+    if (!/^\d+$/.test(id)) return;
+    if (window.fbq) return;
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    window.fbq('init', id);
+    window.fbq('track', 'PageView');
+  }
+  function trackMeta(event, params={}, custom=false) {
+    if (typeof window.fbq !== 'function') return;
+    window.fbq(custom ? 'trackCustom' : 'track', event, params);
+  }
 
   function initIntro() {
     const intro = $('#entryCelebration');
@@ -91,7 +110,7 @@
   }
 
   function toggleFavorite(id) { favorites = favorites.includes(id) ? favorites.filter(x=>x!==id) : [...favorites,id]; save(); updateCounts(); renderCatalog(); renderFavorites(); if(activeProduct?.id===id) els.modalFavorite.classList.toggle('active',favorites.includes(id)), els.modalFavorite.textContent=favorites.includes(id)?'♥':'♡'; toast(favorites.includes(id)?'Salvo nos favoritos ♡':'Removido dos favoritos'); }
-  function addToCart(id, qty=1) { cart[id]=(cart[id]||0)+qty; save(); updateCounts(); renderCart(); els.cartBtn.classList.remove('bump'); void els.cartBtn.offsetWidth; els.cartBtn.classList.add('bump'); toast('Adicionado ao orçamento 🎉'); }
+  function addToCart(id, qty=1) { const p=getProduct(id); cart[id]=(cart[id]||0)+qty; save(); updateCounts(); renderCart(); els.cartBtn.classList.remove('bump'); void els.cartBtn.offsetWidth; els.cartBtn.classList.add('bump'); if(p) trackMeta('AddToCart',{content_ids:[p.id],content_name:p.nome,content_type:'product',value:Number(p.preco||0)*qty,currency:CONFIG.moeda||'BRL'}); toast('Adicionado ao orçamento 🎉'); }
   function changeQty(id, delta) { if(!cart[id]) return; cart[id]+=delta; if(cart[id]<=0) delete cart[id]; save(); updateCounts(); renderCart(); }
   function removeCart(id) { delete cart[id]; save(); updateCounts(); renderCart(); }
   function updateCounts() { const total=cartUnits(); els.cartCount.textContent=total; els.floatingCount.textContent=total; els.floatingCart.classList.toggle('visible',total>0); els.favoritesCount.textContent=favorites.length; }
@@ -109,18 +128,38 @@
     $$('[data-fav-add]').forEach(b=>b.addEventListener('click',()=>addToCart(b.dataset.favAdd))); $$('[data-fav-remove]').forEach(b=>b.addEventListener('click',()=>toggleFavorite(b.dataset.favRemove)));
   }
 
-  function openDrawer(drawer) { drawer.setAttribute('aria-hidden','false'); setBodyLock(); }
+  function suggestedComplements(p) {
+    const explicit = Array.isArray(p.complementos) ? p.complementos.map(getProduct).filter(Boolean).filter(x=>x.id!==p.id) : [];
+    if (explicit.length) return explicit.slice(0,3);
+    const priority = {
+      kits: ['baloes','servicos','estrutura','equipamentos'],
+      baloes: ['kits','servicos','estrutura'],
+      servicos: ['kits','baloes','estrutura'],
+      estrutura: ['kits','baloes','equipamentos'],
+      equipamentos: ['kits','estrutura','servicos']
+    }[p.categoria] || ['kits','baloes','servicos','estrutura','equipamentos'];
+    const found=[];
+    priority.forEach(cat=>{ const item=PRODUCTS.find(x=>x.id!==p.id && x.categoria===cat && !found.some(f=>f.id===x.id)); if(item) found.push(item); });
+    return found.slice(0,3);
+  }
+
+  function openDrawer(drawer) { drawer.setAttribute('aria-hidden','false'); setBodyLock(); if(drawer===els.cartDrawer) trackMeta('OpenCart',{items:cartUnits()},true); }
   function closeDrawer(drawer) { drawer.setAttribute('aria-hidden','true'); setBodyLock(); }
   function openModal(modal) { modal.setAttribute('aria-hidden','false'); setBodyLock(); }
   function closeModal(modal) { modal.setAttribute('aria-hidden','true'); setBodyLock(); }
 
   function openProduct(id) {
     const p=getProduct(id); if(!p) return; activeProduct=p;
-    els.modalImage.src=imageSrc(p.imagens[0],'xl'); els.modalImage.srcset=imageSrcset(p.imagens[0]); els.modalImage.sizes='(max-width: 780px) 100vw, 55vw'; els.modalImage.alt=p.imagens[0].alt||p.nome; els.modalCategory.textContent=p.categoriaNome; els.modalTitle.textContent=p.nome; els.modalDescription.textContent=p.descricao; els.modalPrice.textContent=money(p.preco);
+    const mainImage=p.imagens?.[0] || {};
+    els.modalImage.src=imageSrc(mainImage,'xl'); els.modalImage.srcset=imageSrcset(mainImage); els.modalImage.sizes='(max-width: 780px) 100vw, 55vw'; els.modalImage.alt=mainImage.alt||p.nome; els.modalCategory.textContent=p.categoriaNome; els.modalTitle.textContent=p.nome; els.modalDescription.textContent=p.descricao; els.modalPrice.textContent=money(p.preco);
     els.modalIncludesWrap.hidden=!p.inclui?.length; els.modalIncludes.innerHTML=(p.inclui||[]).map(x=>`<li>${x}</li>`).join('');
+    const complements=suggestedComplements(p); els.modalComplementsWrap.hidden=!complements.length; els.modalComplements.innerHTML=complements.map(c=>{const img=c.imagens?.[0]||{};return `<article class="complement-card"><button class="complement-open" data-complement-open="${c.id}" aria-label="Ver ${c.nome}"><img src="${imageSrc(img,'sm')}" alt="${img.alt||c.nome}" loading="lazy"><span><strong>${c.nome}</strong><small>${money(c.preco)} / ${c.unidade||'item'}</small></span></button><button class="complement-add" data-complement-add="${c.id}">+ Adicionar</button></article>`}).join('');
     els.modalThumbs.innerHTML=(p.imagens||[]).map((img,i)=>`<button class="${i===0?'active':''}" data-thumb="${i}"><img src="${imageSrc(img,'sm')}" alt=""></button>`).join('');
     els.modalFavorite.classList.toggle('active',favorites.includes(p.id)); els.modalFavorite.textContent=favorites.includes(p.id)?'♥':'♡';
     $$('[data-thumb]').forEach(b=>b.addEventListener('click',()=>{ const i=Number(b.dataset.thumb); els.modalImage.src=imageSrc(p.imagens[i],'xl'); els.modalImage.srcset=imageSrcset(p.imagens[i]); els.modalImage.alt=p.imagens[i].alt||p.nome; $$('[data-thumb]').forEach(x=>x.classList.remove('active')); b.classList.add('active'); }));
+    $$('[data-complement-open]').forEach(b=>b.addEventListener('click',()=>openProduct(b.dataset.complementOpen)));
+    $$('[data-complement-add]').forEach(b=>b.addEventListener('click',e=>{ addToCart(b.dataset.complementAdd); const r=e.currentTarget.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,12); }));
+    trackMeta('ViewContent',{content_ids:[p.id],content_name:p.nome,content_type:'product',value:Number(p.preco||0),currency:CONFIG.moeda||'BRL'});
     openModal(els.productModal);
   }
 
@@ -132,7 +171,7 @@
       const price = Number.isFinite(Number(p.preco)) && Number(p.preco) > 0 ? ` — ${money(p.preco)}${unit}` : ' — valor sob consulta';
       lines.push(`• ${qty}x ${p.nome}${price}`);
     });
-    lines.push('', 'Gostaria de verificar disponibilidade e o valor final.');
+    lines.push('', 'Gostaria de verificar disponibilidade e o valor final.', '', '_Pedido montado pelo site Leal D’Coração._');
     return lines.join('\n');
   }
 
@@ -141,7 +180,7 @@
       toast('Configure o WhatsApp em js/config.js');
       return;
     }
-    window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(message)}`,'_blank','noopener');
+    trackMeta('Contact',{contact_method:'WhatsApp'}); window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(message)}`,'_blank','noopener');
   }
   function genericWhatsApp() { openWhatsApp(`Olá! Gostaria de saber mais sobre a ${BRAND_NAME}.`); }
 
@@ -152,6 +191,7 @@
       const r=button.getBoundingClientRect();
       burst(r.left+r.width/2,r.top+r.height/2,28);
     }
+    trackMeta('InitiateCheckout',{num_items:cartUnits(),currency:CONFIG.moeda||'BRL'});
     // O clique do cliente já é a intenção de contato: sem formulário intermediário.
     closeDrawer(els.cartDrawer);
     openWhatsApp(buildOrderMessage());
@@ -168,8 +208,8 @@
     document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeDrawer(els.cartDrawer);closeDrawer(els.favoritesDrawer);closeModal(els.productModal);} });
   }
 
-  function setupBusinessInfo() { $('#year').textContent=new Date().getFullYear(); $('#serviceArea').textContent=CONFIG.areaAtendimento||'Consulte nossa área de atendimento'; const ig=$('#instagramLink'); if(isConfigured(CONFIG.instagram)) ig.href=CONFIG.instagram; else ig.addEventListener('click',e=>{e.preventDefault();toast('Configure o Instagram em js/config.js');}); }
+  function setupBusinessInfo() { $('#year').textContent=new Date().getFullYear(); const area=$('#serviceArea'); if(area) area.textContent=PUBLIC_CONTACT.area; const ig=$('#instagramLink'); if(ig) ig.href=PUBLIC_CONTACT.instagram; const email=$('#emailLink'); if(email){ email.href=`mailto:${PUBLIC_CONTACT.email}`; email.textContent=PUBLIC_CONTACT.email; } }
   function setupReveal() { const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);}}),{threshold:.1}); $$('.reveal').forEach(el=>io.observe(el)); }
 
-  initIntro(); renderCategories(); renderCatalog(); renderCart(); renderFavorites(); updateCounts(); bindStaticActions(); setupBusinessInfo(); setupReveal();
+  initMetaPixel(); initIntro(); renderCategories(); renderCatalog(); renderCart(); renderFavorites(); updateCounts(); bindStaticActions(); setupBusinessInfo(); setupReveal();
 })();

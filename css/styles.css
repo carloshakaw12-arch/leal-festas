@@ -210,3 +210,47 @@ img { display: block; max-width: 100%; }
   .brand .brand-script { font-size: 1.42rem; }
   .brand .brand-heart { font-size: .86rem; }
 }
+
+/* v6 — detalhes comerciais, complementos e identidade do rodapé */
+.footer-brand .brand-name {
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  font-size: inherit !important;
+}
+.footer-brand .brand-script {
+  font-family: "Segoe Script", "Lucida Handwriting", "Brush Script MT", cursive;
+  font-weight: 650;
+  letter-spacing: -.06em;
+}
+
+.includes-panel {
+  margin-top: 22px;
+  padding: 18px 18px 16px;
+  border: 1px solid var(--rose-soft);
+  border-radius: 18px;
+  background: linear-gradient(145deg, #fff, #fff6f4);
+}
+.includes-panel-title { display: flex; align-items: center; gap: 9px; margin-bottom: 11px; }
+.includes-panel-title > span { width: 25px; height: 25px; border-radius: 50%; display: grid; place-items: center; background: #e7f3ec; color: var(--success); font-weight: 900; }
+.product-modal-copy .includes-panel-title h3 { margin: 0; font-size: .94rem; }
+.includes-panel .includes-list { gap: 8px; color: #574b4d; }
+
+.complements-panel { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+.complements-head { display: flex; align-items: end; justify-content: space-between; margin-bottom: 10px; }
+.complements-head .eyebrow { margin: 0 0 2px; font-size: .61rem; }
+.product-modal-copy .complements-head h3 { margin: 0; font-family: Georgia, serif; font-size: 1.28rem; font-weight: 500; }
+.complements-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.complement-card { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; border: 1px solid var(--line); background: #fff; border-radius: 14px; padding: 8px; }
+.complement-open { min-width: 0; border: 0; background: transparent; display: grid; grid-template-columns: 52px minmax(0,1fr); gap: 10px; align-items: center; text-align: left; padding: 0; color: var(--text); }
+.complement-open img { width: 52px; height: 48px; object-fit: cover; border-radius: 10px; background: #f5ece8; }
+.complement-open span { min-width: 0; display: grid; gap: 2px; }
+.complement-open strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: Georgia,serif; font-size: .92rem; }
+.complement-open small { color: var(--muted); font-size: .68rem; }
+.complement-add { border: 1px solid var(--rose-soft); border-radius: 999px; background: var(--surface-soft); color: var(--rose-dark); padding: 8px 11px; font-size: .7rem; font-weight: 800; white-space: nowrap; }
+.complement-add:hover { background: var(--rose); color: #fff; }
+
+@media (max-width: 470px) {
+  .includes-panel { padding: 15px 14px; }
+  .complement-card { grid-template-columns: 1fr; }
+  .complement-add { width: 100%; }
+}

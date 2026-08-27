@@ -71,10 +71,17 @@
         </div>
 
         <label>Descrição<textarea id="descricao" rows="4"></textarea></label>
-        <label>O que inclui <small>um item por linha</small><textarea id="inclui" rows="6" placeholder="Painel temático\nTrio de cilindros\nTapete"></textarea></label>
+        <label>O que inclui <small>um item por linha</small><textarea id="inclui" rows="6" placeholder="Painel temático
+Trio de cilindros
+Tapete"></textarea></label>
+        <label>Complementos sugeridos <small>IDs dos produtos, um por linha. Se deixar vazio, o site sugere automaticamente.</small><textarea id="complementos" rows="4" placeholder="arco-organico
+pintura-facial
+cadeira-plastica"></textarea></label>
 
-        <div class="photos-head"><div><span class="eyebrow">Galeria</span><h2>Fotos</h2></div><button type="button" id="addPhotoBtn" class="btn ghost">+ Adicionar foto</button></div>
-        <p class="help">Para foto otimizada, preencha 800 / 1800 / 2560. Para SVG/demo ou uma única imagem, basta usar “Arquivo único”.</p>
+        <div class="photos-head"><div><span class="eyebrow">Galeria</span><h2>Fotos</h2></div><div class="photo-actions"><button type="button" id="optimizePhotoBtn" class="btn primary">✨ Otimizar fotos originais</button><button type="button" id="addPhotoBtn" class="btn ghost">+ Adicionar foto</button></div></div>
+        <p class="help">O botão “Otimizar fotos originais” gera versões WebP em 800 / 1800 / 2560 px com qualidade alta. No Edge/Chrome, você pode escolher a pasta raiz do projeto e os arquivos serão gravados direto em <strong>public/images/catalogo/ID-DO-PRODUTO/</strong>.</p>
+        <input id="optimizeFileInput" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden />
+        <div id="optimizerStatus" class="optimizer-status" hidden></div>
         <div id="photosEditor" class="photos-editor"></div>
 
         <div class="savebar">

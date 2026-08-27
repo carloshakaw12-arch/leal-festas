@@ -1,19 +1,27 @@
-# Leal D’Coração — Ajuste de proporção v5
+# Leal D’Coração — atualização v6
 
-Atualização visual somente da marca.
+Extraia este ZIP diretamente dentro da pasta `leal-festas-site` e aceite substituir os arquivos.
 
-- `D’Coração` passa a ter aproximadamente 60% da escala visual de `Leal`.
-- Espaçamento entre os dois nomes foi reduzido.
-- Ajustado no cabeçalho, animação de entrada, rodapé e Admin.
-- `Festas & Decorações` permanece exatamente com o mesmo tamanho/estilo.
-- Não altera catálogo, WhatsApp, fotos, carrinho ou `config.js`.
+## Esta atualização NÃO substitui
+- `js/config.js` — seu número de WhatsApp continua intacto.
+- `data/catalogo.js` — seu catálogo atual continua intacto.
+- suas fotos atuais.
 
-Extraia sobre a pasta raiz `leal-festas-site` e aceite substituir os dois arquivos.
+## Contatos configurados na interface
+- Instagram: @lealdcoracao
+- E-mail: lealmirielen@gmail.com
+- Região: Guapimirim - RJ
 
-Depois:
+## Melhorias
+1. “O que está incluso” ganhou destaque visual no modal do produto.
+2. “Combine com” sugere até 3 complementos. Sem configuração, as sugestões são automáticas; no Admin você pode informar os IDs desejados.
+3. Meta Pixel preparado com eventos ViewContent, AddToCart, OpenCart, InitiateCheckout e Contact. Ele permanece desligado até preencher `js/analytics.js` com o ID do Pixel.
+4. Admin: “Otimizar fotos originais” gera WebP 800/1800/2560 em qualidade 0.92. No Edge/Chrome, escolha a raiz `leal-festas-site` para gravar direto em `public/images/catalogo/<id>/`.
 
-```powershell
+## Git
+Depois de extrair:
+```
 git add .
-git commit -m "Ajusta proporcao da marca Leal D Coracao"
+git commit -m "Atualiza site Leal D Coracao v6"
 git push
 ```
