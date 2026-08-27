@@ -78,9 +78,11 @@ Tapete"></textarea></label>
 pintura-facial
 cadeira-plastica"></textarea></label>
 
-        <div class="photos-head"><div><span class="eyebrow">Galeria</span><h2>Fotos</h2></div><div class="photo-actions"><button type="button" id="optimizePhotoBtn" class="btn primary">✨ Otimizar fotos originais</button><button type="button" id="addPhotoBtn" class="btn ghost">+ Adicionar foto</button></div></div>
-        <p class="help">O botão “Otimizar fotos originais” gera versões WebP em 800 / 1800 / 2560 px com qualidade alta. No Edge/Chrome, você pode escolher a pasta raiz do projeto e os arquivos serão gravados direto em <strong>public/images/catalogo/ID-DO-PRODUTO/</strong>.</p>
+        <div class="photos-head"><div><span class="eyebrow">Galeria</span><h2>Fotos</h2></div><div class="photo-actions"><button type="button" id="optimizePhotoBtn" class="btn primary">✨ Otimizar fotos originais</button><button type="button" id="addPhotoBtn" class="btn ghost">📁 Adicionar fotos prontas</button></div></div>
+        <p class="help">“Otimizar fotos originais” gera versões WebP em 800 / 1800 / 2560 px com qualidade alta. Se o navegador permitir acesso à pasta do projeto, elas são gravadas direto em <strong>public/images/catalogo/ID-DO-PRODUTO/</strong>. No Admin online do Render, quando a gravação direta não estiver disponível, será baixado <strong>um único ZIP</strong> já com essa estrutura pronta para extrair sobre o projeto.</p>
+        <p class="help"><strong>“Adicionar fotos prontas”</strong> serve para selecionar WebPs que já estão no seu projeto. O Admin reconhece automaticamente arquivos terminados em <strong>-800.webp</strong>, <strong>-1800.webp</strong> e <strong>-2560.webp</strong> e monta a galeria.</p>
         <input id="optimizeFileInput" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden />
+        <input id="readyPhotoInput" type="file" accept="image/webp,.webp" multiple hidden />
         <div id="optimizerStatus" class="optimizer-status" hidden></div>
         <div id="photosEditor" class="photos-editor"></div>
 

@@ -96,18 +96,47 @@
     const handle=await dir.getFileHandle(name,{create:true}); const writable=await handle.createWritable(); await writable.write(blob); await writable.close();
   }
   function downloadBlob(name,blob){
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1200);
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1500);
   }
+
+  // ZIP simples (STORE, sem recompressão). WebP já é comprimido, então isso evita
+  // baixar dezenas de arquivos separadamente quando o Admin está rodando no Render.
+  const CRC_TABLE=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);t[n]=c>>>0;}return t;})();
+  function crc32(bytes){let c=0xFFFFFFFF;for(const b of bytes)c=CRC_TABLE[(c^b)&0xFF]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
+  function u16(n){return new Uint8Array([n&255,(n>>>8)&255]);}
+  function u32(n){return new Uint8Array([n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255]);}
+  function concatBytes(parts){const len=parts.reduce((n,p)=>n+p.length,0),out=new Uint8Array(len);let off=0;for(const p of parts){out.set(p,off);off+=p.length;}return out;}
+  function dosDateTime(d=new Date()){
+    const year=Math.max(1980,d.getFullYear());
+    return {time:((d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1))&0xFFFF,date:(((year-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate())&0xFFFF};
+  }
+  async function makeZip(entries){
+    const enc=new TextEncoder(), locals=[], centrals=[]; let offset=0;
+    for(const entry of entries){
+      const name=enc.encode(entry.path.replace(/\\/g,'/')), data=new Uint8Array(await entry.blob.arrayBuffer()), crc=crc32(data), dt=dosDateTime(entry.date||new Date());
+      const local=concatBytes([u32(0x04034b50),u16(20),u16(0x0800),u16(0),u16(dt.time),u16(dt.date),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),name,data]);
+      const central=concatBytes([u32(0x02014b50),u16(20),u16(20),u16(0x0800),u16(0),u16(dt.time),u16(dt.date),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(offset),name]);
+      locals.push(local); centrals.push(central); offset+=local.length;
+    }
+    const centralData=concatBytes(centrals), localData=concatBytes(locals);
+    const end=concatBytes([u32(0x06054b50),u16(0),u16(0),u16(entries.length),u16(entries.length),u32(centralData.length),u32(localData.length),u16(0)]);
+    return new Blob([localData,centralData,end],{type:'application/zip'});
+  }
+
   async function optimizeOriginals(files){
     const p=current(); if(!p||!files.length)return;
     const safeId=slug(p.id||p.nome)||`produto-${Date.now()}`;
     let rootHandle=null, directSave=false;
     if('showDirectoryPicker' in window){
       try { rootHandle=await window.showDirectoryPicker({mode:'readwrite'}); directSave=true; }
-      catch(err){ if(err?.name==='AbortError'){ setOptimizerStatus('Operação cancelada. Nenhum arquivo foi alterado.','error'); return; } }
+      catch(err){
+        // Cancelar a escolha de pasta no Admin online não deve cancelar a otimização:
+        // seguimos no modo ZIP. Só erros inesperados são registrados no console.
+        if(err?.name!=='AbortError') console.warn('Gravação direta indisponível; usando ZIP.',err);
+      }
     }
     const dest=directSave ? await nestedDirectory(rootHandle,['public','images','catalogo',safeId]) : null;
-    const generated=[];
+    const generated=[], zipEntries=[];
     for(let index=0; index<files.length; index++){
       const file=files[index]; setOptimizerStatus(`Otimizando ${index+1} de ${files.length}: ${file.name}…`,'working');
       const probe=await bitmapFromFile(file); const originalWidth=probe.width; probe.close?.();
@@ -115,21 +144,51 @@
       const variants={};
       for(const [key,width] of [['sm',800],['md',1800],['xl',2560]]){
         if(originalWidth < width && key!=='sm') continue;
-        const outputWidth=Math.max(1, Math.min(width, originalWidth));
+        const outputWidth=Math.max(1,Math.min(width,originalWidth));
         const blob=await resizeWebp(file,outputWidth,.92);
         const filename=`${base}-${width}.webp`;
-        if(directSave) await writeBlob(dest,filename,blob); else downloadBlob(filename,blob);
+        if(directSave) await writeBlob(dest,filename,blob);
+        else zipEntries.push({path:`public/images/catalogo/${safeId}/${filename}`,blob});
         variants[key]=`public/images/catalogo/${safeId}/${filename}`;
       }
       generated.push({alt:`${p.nome} — foto ${index+1}`,variantes:variants});
     }
+    if(!directSave && zipEntries.length){
+      setOptimizerStatus('Gerando pacote ZIP das fotos…','working');
+      const zip=await makeZip(zipEntries);
+      downloadBlob(`fotos-${safeId}.zip`,zip);
+    }
     p.imagens=[...(p.imagens||[]),...generated]; p.demo=false; persist(); renderPhotos(p.imagens); renderList();
-    setOptimizerStatus(directSave ? `Pronto: ${generated.length} foto(s) otimizadas e gravadas diretamente em public/images/catalogo/${safeId}/. Os caminhos já foram adicionados ao produto.` : `Pronto: ${generated.length} foto(s) processadas. Como o navegador não permitiu gravação direta, os WebP foram baixados. Mova-os para public/images/catalogo/${safeId}/ antes de publicar.`,'done');
+    setOptimizerStatus(directSave
+      ? `Pronto: ${generated.length} foto(s) otimizadas e gravadas diretamente em public/images/catalogo/${safeId}/. Os caminhos já foram adicionados ao produto.`
+      : `Pronto: ${generated.length} foto(s) processadas. Foi baixado o arquivo fotos-${safeId}.zip. Extraia esse ZIP sobre a pasta raiz leal-festas-site; ele já contém public/images/catalogo/${safeId}/ com os arquivos nos lugares corretos.`,'done');
     toast('Fotos otimizadas ✓');
   }
 
+  function addReadyPhotos(files){
+    const p=current(); if(!p||!files.length)return;
+    const safeId=slug(p.id||p.nome)||`produto-${Date.now()}`;
+    const groups=new Map();
+    for(const file of files){
+      const name=file.name;
+      const match=name.match(/^(.*)-(800|1800|2560)\.webp$/i);
+      if(match){
+        const base=match[1], width=match[2], key=width==='800'?'sm':width==='1800'?'md':'xl';
+        if(!groups.has(base)) groups.set(base,{alt:`${p.nome}`,variantes:{}});
+        groups.get(base).variantes[key]=`public/images/catalogo/${safeId}/${name}`;
+      } else {
+        groups.set(`single-${name}`,{src:`public/images/catalogo/${safeId}/${name}`,alt:`${p.nome}`});
+      }
+    }
+    const added=[...groups.values()];
+    p.imagens=[...(p.imagens||[]),...added]; p.demo=false; persist(); renderPhotos(p.imagens); renderList();
+    setOptimizerStatus(`${added.length} foto(s) adicionadas ao catálogo. Confirme que esses arquivos estão fisicamente em public/images/catalogo/${safeId}/ antes do git push.`,'done');
+    toast('Fotos adicionadas ✓');
+  }
+
   $('#productForm').onsubmit=saveCurrent; $('#newBtn').onclick=addNew; $('#moveUpBtn').onclick=()=>move(-1); $('#moveDownBtn').onclick=()=>move(1); $('#deleteBtn').onclick=remove; $('#downloadBtn').onclick=download; $('#copyBtn').onclick=copy; $('#resetBtn').onclick=reset;
-  $('#addPhotoBtn').onclick=()=>{ const p=current(); if(!p)return; p.imagens=p.imagens||[]; p.imagens.push({src:'',alt:p.nome||''}); persist(); renderPhotos(p.imagens); };
+  $('#addPhotoBtn').onclick=()=>$('#readyPhotoInput').click();
+  $('#readyPhotoInput').onchange=e=>{ const files=[...e.target.files]; e.target.value=''; try{addReadyPhotos(files);}catch(err){console.error(err);setOptimizerStatus(`Erro ao adicionar: ${err.message||err}`,'error');toast('Erro ao adicionar fotos');} };
   $('#optimizePhotoBtn').onclick=()=>$('#optimizeFileInput').click(); $('#optimizeFileInput').onchange=async e=>{ const files=[...e.target.files]; e.target.value=''; try{await optimizeOriginals(files);}catch(err){console.error(err);setOptimizerStatus(`Erro ao otimizar: ${err.message||err}`,'error');toast('Erro ao otimizar fotos');} };
   $('#nome').addEventListener('input',()=>{ const id=$('#id'); if(id.value.startsWith('novo-item-')) id.value=slug($('#nome').value); });
 

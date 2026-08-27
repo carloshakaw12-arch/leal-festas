@@ -1,27 +1,35 @@
-# Leal D’Coração — atualização v6
+# Leal D’Coração — Atualização v7 (Admin de fotos)
 
-Extraia este ZIP diretamente dentro da pasta `leal-festas-site` e aceite substituir os arquivos.
+Esta atualização corrige o fluxo de fotos do Admin.
 
-## Esta atualização NÃO substitui
-- `js/config.js` — seu número de WhatsApp continua intacto.
-- `data/catalogo.js` — seu catálogo atual continua intacto.
-- suas fotos atuais.
+## O que mudou
 
-## Contatos configurados na interface
-- Instagram: @lealdcoracao
-- E-mail: lealmirielen@gmail.com
-- Região: Guapimirim - RJ
+- No Admin online do Render, ao otimizar fotos, o site baixa **um único ZIP** (`fotos-ID-DO-PRODUTO.zip`) em vez de vários WebP separados.
+- O ZIP já contém a estrutura correta: `public/images/catalogo/ID-DO-PRODUTO/`.
+- Basta extrair o ZIP sobre a pasta raiz `leal-festas-site`.
+- O botão **Adicionar fotos prontas** agora abre o seletor de arquivos.
+- Ele reconhece automaticamente arquivos `-800.webp`, `-1800.webp` e `-2560.webp` e agrupa as variantes da mesma foto.
+- A gravação direta na pasta do projeto continua disponível quando o navegador permitir `showDirectoryPicker`.
 
-## Melhorias
-1. “O que está incluso” ganhou destaque visual no modal do produto.
-2. “Combine com” sugere até 3 complementos. Sem configuração, as sugestões são automáticas; no Admin você pode informar os IDs desejados.
-3. Meta Pixel preparado com eventos ViewContent, AddToCart, OpenCart, InitiateCheckout e Contact. Ele permanece desligado até preencher `js/analytics.js` com o ID do Pixel.
-4. Admin: “Otimizar fotos originais” gera WebP 800/1800/2560 em qualidade 0.92. No Edge/Chrome, escolha a raiz `leal-festas-site` para gravar direto em `public/images/catalogo/<id>/`.
+## Como aplicar
 
-## Git
-Depois de extrair:
-```
+Extraia este patch sobre a pasta `leal-festas-site` e aceite substituir os arquivos.
+
+Depois:
+
+```powershell
 git add .
-git commit -m "Atualiza site Leal D Coracao v6"
+git commit -m "Melhora fluxo de fotos do Admin"
 git push
 ```
+
+## Fluxo recomendado no Admin online
+
+1. Abra o produto.
+2. Clique em **Otimizar fotos originais**.
+3. Selecione as fotos originais.
+4. Se o navegador não permitir gravação direta, será baixado `fotos-ID.zip`.
+5. Extraia esse ZIP sobre `leal-festas-site`.
+6. No Admin, salve o item e baixe `catalogo.js`.
+7. Substitua `data/catalogo.js`.
+8. Faça `git add`, `commit` e `push`.
