@@ -3,10 +3,10 @@ window.LEAL_CONFIG = {
 
   // IMPORTANTE: use somente números, com DDI + DDD + número.
   // Exemplo fictício: 5521999999999
-  whatsapp: "SEU_NUMERO_AQUI",
+  whatsapp: "5521989100504",
 
   // Usado na opção "Enviar por e-mail".
-  email: "SEU_EMAIL_AQUI",
+  email: "carlosazevedo94@outlook.com.br",
 
   instagram: "https://instagram.com/SEU_PERFIL_AQUI",
   areaAtendimento: "Consulte nossa área de atendimento",
