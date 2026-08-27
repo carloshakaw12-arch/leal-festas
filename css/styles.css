@@ -177,3 +177,8 @@ img { display: block; max-width: 100%; }
 @media (prefers-reduced-motion: reduce) {
   *,*::before,*::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }.entry-celebration { display: none; }.reveal { opacity: 1; transform: none; }
 }
+
+/* Carrinho -> WhatsApp direto */
+.cart-whatsapp-hint { margin: 9px 0 0; text-align: center; color: var(--muted); font-size: .72rem; line-height: 1.35; }
+.btn-whatsapp { background: #247a45; color: #fff; border-color: #247a45; }
+.btn-whatsapp:hover { background: #1e683b; border-color: #1e683b; }

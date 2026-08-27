@@ -116,7 +116,7 @@
         <div class="steps-grid">
           <article class="step-card reveal"><span>01</span><div class="step-icon">🎂</div><h3>Escolha</h3><p>Navegue pelos kits, estruturas e serviços disponíveis.</p></article>
           <article class="step-card reveal"><span>02</span><div class="step-icon">🛒</div><h3>Monte</h3><p>Adicione ao carrinho tudo o que deseja incluir no orçamento.</p></article>
-          <article class="step-card reveal"><span>03</span><div class="step-icon">💬</div><h3>Envie</h3><p>Informe data e local e mande o pedido pronto pelo WhatsApp.</p></article>
+          <article class="step-card reveal"><span>03</span><div class="step-icon">💬</div><h3>Envie</h3><p>Envie seu carrinho direto para o WhatsApp e continue o atendimento com a gente.</p></article>
           <article class="step-card reveal"><span>04</span><div class="step-icon">✨</div><h3>Comemore</h3><p>Alinhamos disponibilidade, detalhes e a melhor solução para sua festa.</p></article>
         </div>
       </div>
@@ -183,7 +183,7 @@
       <div id="cartFooter" class="cart-footer" hidden>
         <div class="cart-summary"><span>Itens selecionados</span><strong id="cartTotalItems">0</strong></div>
         <p class="cart-note">Os valores exibidos são referências e podem variar conforme data, local, quantidade e disponibilidade.</p>
-        <button id="checkoutBtn" class="btn btn-primary btn-full">Finalizar orçamento 🎉</button>
+        <button id="checkoutBtn" class="btn btn-whatsapp btn-full">Enviar orçamento pelo WhatsApp 💬</button><p class="cart-whatsapp-hint">Abre o WhatsApp com os itens do carrinho já preenchidos. Sem formulário.</p>
         <button id="clearCartBtn" class="text-btn">Limpar carrinho</button>
       </div>
     </div>
@@ -218,25 +218,6 @@
     </div>
   </div>
 
-  <div id="checkoutModal" class="modal" aria-hidden="true">
-    <div class="modal-backdrop" data-close-checkout></div>
-    <div class="checkout-card" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
-      <button class="close-btn modal-close" data-close-checkout aria-label="Fechar">×</button>
-      <div class="checkout-head"><span class="eyebrow">Quase pronto</span><h2 id="checkoutTitle">Complete seu pedido</h2><p>Essas informações entram junto com o carrinho na mensagem.</p></div>
-      <form id="checkoutForm" class="checkout-form">
-        <label>Seu nome<input name="nome" required placeholder="Ex.: Juliana" /></label>
-        <label>Telefone para retorno<input name="telefone" inputmode="tel" placeholder="(21) 99999-9999" /></label>
-        <div class="form-row"><label>Data da festa<input name="data" type="date" /></label><label>Cidade / bairro<input name="local" placeholder="Ex.: Centro" /></label></div>
-        <label>Observações<textarea name="observacoes" rows="3" placeholder="Tema, horário, quantidade de convidados ou qualquer detalhe importante..."></textarea></label>
-        <div class="checkout-actions">
-          <button type="submit" class="btn btn-whatsapp">Enviar pelo WhatsApp</button>
-          <button type="button" id="emailOrderBtn" class="btn btn-secondary">Enviar por e-mail</button>
-          <button type="button" id="copyOrderBtn" class="text-btn">Copiar resumo do pedido</button>
-        </div>
-        <p id="configWarning" class="config-warning" hidden>⚙️ Antes de publicar, configure seu WhatsApp e e-mail em <strong>js/config.js</strong>.</p>
-      </form>
-    </div>
-  </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 

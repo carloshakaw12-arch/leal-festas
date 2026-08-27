@@ -6,80 +6,76 @@ Site estático em HTML/CSS/JavaScript, pronto para GitHub + Render.
 
 - Página responsiva (desktop e mobile)
 - Animação de entrada com balões e confetes
-- Catálogo por categorias
-- Busca por nome/descrição
+- Catálogo por categorias e busca
 - Modal com galeria e detalhes do item
 - Favoritos persistidos no navegador
 - Carrinho de orçamento persistido no navegador
 - Quantidade por item
 - Confete ao adicionar ao carrinho e ao finalizar
-- Formulário de data/local/nome/telefone/observações
-- Geração automática da mensagem do pedido
-- Envio por WhatsApp (`wa.me`)
-- Opção de e-mail (`mailto:`)
-- Opção de copiar resumo do pedido
+- Envio **direto** do carrinho para o WhatsApp, sem formulário intermediário
+- Mensagem do WhatsApp já preenchida com itens, quantidades e preços de referência
 - Produtos em destaque
 - Itens publicados/ocultos via `ativo: true/false`
+- Ferramenta Admin para editar o catálogo e gerar um novo `catalogo.js`
 
 ## 1) Configure os contatos
 
-Abra `js/config.js` e altere:
+Abra `js/config.js` e altere, principalmente:
 
 ```js
 whatsapp: "5521999999999",
-email: "contato@exemplo.com",
 instagram: "https://instagram.com/seuperfil",
 areaAtendimento: "Sua cidade e região"
 ```
 
 No WhatsApp use somente números: DDI + DDD + número.
 
-## 2) Gerencie o catálogo
+## 2) Fluxo do orçamento
 
-Abra `data/catalogo.js`.
+O botão do carrinho **Enviar orçamento pelo WhatsApp** não pede nome, telefone, data ou endereço. Ele abre imediatamente o WhatsApp com uma mensagem semelhante a:
 
-Cada produto possui esta estrutura:
+```text
+Olá! Gostaria de solicitar um orçamento na Leal Festas & Decorações 🎉
 
-```js
-{
-  id: "kit-safari",
-  nome: "Kit Safari",
-  categoria: "kits",
-  categoriaNome: "Kits de Festa",
-  preco: 249.90,
-  unidade: "kit",
-  destaque: true,
-  ativo: true,
-  demo: false,
-  descricao: "Descrição do kit...",
-  inclui: ["Painel", "Mesas", "Bandejas"],
-  imagens: [
-    {
-      src: "public/images/kits/safari/capa-1800.webp",
-      variantes: {
-        sm: "public/images/kits/safari/capa-800.webp",
-        md: "public/images/kits/safari/capa-1800.webp",
-        xl: "public/images/kits/safari/capa-2560.webp"
-      },
-      alt: "Kit Safari completo"
-    }
-  ]
-}
+🛒 Itens selecionados:
+• 1x Kit Safari — R$ 249,90/kit
+• 2x Arco Orgânico de Balões — R$ 180,00/serviço
+
+Gostaria de verificar disponibilidade e o valor final.
 ```
 
-### Para ocultar um produto
+O restante das informações pode ser levantado durante a conversa.
 
-```js
-ativo: false
+## 3) Admin do catálogo
+
+Abra:
+
+```text
+admin/index.html
 ```
 
-### Para destacar um produto
+ou, usando o servidor local:
 
-```js
-destaque: true
+```text
+http://localhost:5500/admin/
 ```
 
-## 3) Organização recomendada das fotos reais
+No Admin você pode:
+
+- adicionar e excluir itens;
+- editar nome, categoria, preço, descrição e unidade;
+- publicar/ocultar;
+- marcar como destaque;
+- mudar a ordem dos produtos;
+- editar o que está incluído;
+- cadastrar fotos e variantes 800 / 1800 / 2560 px;
+- baixar um `catalogo.js` novo.
+
+As alterações do Admin ficam em um rascunho no navegador. Quando terminar, clique em **Baixar catalogo.js**, substitua o arquivo `data/catalogo.js` do projeto pelo arquivo baixado e faça o push para o GitHub.
+
+> A página Admin não contém token do GitHub e não publica diretamente. Isso evita colocar credenciais sensíveis dentro do site público.
+
+## 4) Organização recomendada das fotos reais
 
 ```text
 public/images/
@@ -94,44 +90,58 @@ public/images/
 └── servicos/
 ```
 
-As imagens demonstrativas atuais ficam em `public/images/demo/` e devem ser substituídas. Nos produtos reais use `demo: false` para remover automaticamente o selo “Imagem demo”.
+As imagens demonstrativas atuais ficam em `public/images/demo/`. Nos produtos reais use `demo: false` para retirar o selo “Imagem demo”.
 
-O site já entende `variantes.sm`, `variantes.md` e `variantes.xl` e deixa o navegador escolher a resolução adequada para a tela.
+## 5) Qualidade das fotos
 
-## 4) Qualidade das fotos
+Mantenha a foto original fora do GitHub (Drive/HD). Para o site:
 
-Mantenha a foto original fora do GitHub (Drive/HD). Para o site, a recomendação é:
+- miniatura: 800 px, WebP, qualidade alta;
+- principal: 1800–2000 px, WebP, qualidade 90–92%;
+- ampliada: 2560 px, WebP, qualidade 90–92%.
 
-- miniatura: 800 px, WebP, qualidade alta
-- principal: 1800–2000 px, WebP, qualidade 90–92%
-- ampliada: 2560 px, WebP, qualidade 90–92%
+O site entende `variantes.sm`, `variantes.md` e `variantes.xl`, permitindo ao navegador carregar uma resolução adequada para cada tela sem sacrificar a qualidade da galeria.
 
-O objetivo é otimizar sem perda visual perceptível.
+## 6) Teste local
 
-## 5) Teste local
-
-Este projeto não precisa de build. Você pode abrir `index.html` diretamente no navegador.
-
-Também pode executar um servidor local:
+Você pode abrir `index.html` diretamente. Para testar o site e o Admin em localhost, execute na pasta do projeto:
 
 ```bash
 python -m http.server 5500
 ```
 
-Depois abra `http://localhost:5500`.
+Depois abra:
 
-## 6) Render
+```text
+http://localhost:5500
+```
 
-Como é um site estático sem build:
+Admin:
+
+```text
+http://localhost:5500/admin/
+```
+
+## 7) Atualização no GitHub
+
+Depois de substituir fotos ou `data/catalogo.js`:
+
+```powershell
+git add .
+git commit -m "Atualiza catálogo Leal Festas"
+git push
+```
+
+O Render pode fazer o novo deploy automaticamente após o push.
+
+## Render
 
 - Service type: **Static Site**
 - Branch: `main`
-- Build Command: pode deixar vazio (se a interface exigir um comando, use `echo "No build required"`)
+- Build Command: `echo "No build required"` (ou vazio, se permitido)
 - Publish Directory: `.`
-
-Cada push na branch vinculada pode disparar um novo deploy automático.
 
 ## Observações
 
-Os preços do catálogo são demonstrativos. Troque todos antes de publicar.
+Os preços atuais são demonstrativos. Troque-os antes de publicar comercialmente.
 O carrinho é um **carrinho de orçamento**, não um checkout de pagamento.

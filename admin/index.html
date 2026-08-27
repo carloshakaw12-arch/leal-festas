@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Leal Admin — Catálogo</title>
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <span class="brand">Leal</span>
+      <small>ADMIN • CATÁLOGO</small>
+    </div>
+    <div class="top-actions">
+      <button id="resetBtn" class="btn ghost">Recarregar catálogo</button>
+      <button id="copyBtn" class="btn ghost">Copiar catalogo.js</button>
+      <button id="downloadBtn" class="btn primary">Baixar catalogo.js</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-head">
+        <div><strong>Produtos</strong><span id="productCount">0 itens</span></div>
+        <button id="newBtn" class="round" title="Novo produto">+</button>
+      </div>
+      <div id="productList" class="product-list"></div>
+      <p class="local-note">As alterações ficam salvas neste navegador até você baixar o novo <strong>catalogo.js</strong>. A ferramenta não publica nada sozinha.</p>
+    </aside>
+
+    <section class="editor">
+      <div id="emptyEditor" class="empty-editor">
+        <div>🎂</div>
+        <h1>Selecione um item</h1>
+        <p>Edite produtos, ordem, destaque, publicação e fotos.</p>
+      </div>
+
+      <form id="productForm" class="product-form" hidden>
+        <div class="editor-title">
+          <div><span class="eyebrow">Editar item</span><h1 id="editorName">Produto</h1></div>
+          <div class="editor-actions">
+            <button type="button" id="moveUpBtn" class="btn ghost">↑ Subir</button>
+            <button type="button" id="moveDownBtn" class="btn ghost">↓ Descer</button>
+            <button type="button" id="deleteBtn" class="btn danger">Excluir</button>
+          </div>
+        </div>
+
+        <div class="status-row">
+          <label class="switch-line"><input id="ativo" type="checkbox" /><span>Publicado</span></label>
+          <label class="switch-line"><input id="destaque" type="checkbox" /><span>Destaque</span></label>
+          <label class="switch-line"><input id="demo" type="checkbox" /><span>Imagem demo</span></label>
+        </div>
+
+        <div class="grid two">
+          <label>Nome<input id="nome" required /></label>
+          <label>ID / slug<input id="id" required placeholder="kit-safari" /></label>
+        </div>
+
+        <div class="grid three">
+          <label>Categoria<select id="categoria">
+            <option value="kits">Kits</option>
+            <option value="baloes">Balões</option>
+            <option value="estrutura">Estrutura</option>
+            <option value="equipamentos">Equipamentos</option>
+            <option value="servicos">Serviços</option>
+          </select></label>
+          <label>Preço a partir de (R$)<input id="preco" type="number" min="0" step="0.01" /></label>
+          <label>Unidade<input id="unidade" placeholder="kit, unidade, serviço..." /></label>
+        </div>
+
+        <label>Descrição<textarea id="descricao" rows="4"></textarea></label>
+        <label>O que inclui <small>um item por linha</small><textarea id="inclui" rows="6" placeholder="Painel temático\nTrio de cilindros\nTapete"></textarea></label>
+
+        <div class="photos-head"><div><span class="eyebrow">Galeria</span><h2>Fotos</h2></div><button type="button" id="addPhotoBtn" class="btn ghost">+ Adicionar foto</button></div>
+        <p class="help">Para foto otimizada, preencha 800 / 1800 / 2560. Para SVG/demo ou uma única imagem, basta usar “Arquivo único”.</p>
+        <div id="photosEditor" class="photos-editor"></div>
+
+        <div class="savebar">
+          <span id="saveStatus">Edite e salve o item.</span>
+          <button type="submit" class="btn primary large">Salvar alterações do item</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script src="../data/catalogo.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

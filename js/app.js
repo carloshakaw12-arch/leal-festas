@@ -19,7 +19,7 @@
     cartBtn: $('#cartBtn'), cartDrawer: $('#cartDrawer'), cartItems: $('#cartItems'), cartEmpty: $('#cartEmpty'), cartFooter: $('#cartFooter'), cartCount: $('#cartCount'), floatingCart: $('#floatingCart'), floatingCount: $('#floatingCartCount'), cartTotalItems: $('#cartTotalItems'),
     favoritesBtn: $('#favoritesBtn'), favoritesDrawer: $('#favoritesDrawer'), favoritesItems: $('#favoritesItems'), favoritesEmpty: $('#favoritesEmpty'), favoritesFooter: $('#favoritesFooter'), favoritesCount: $('#favoritesCount'),
     productModal: $('#productModal'), modalImage: $('#modalImage'), modalThumbs: $('#modalThumbs'), modalCategory: $('#modalCategory'), modalTitle: $('#productModalTitle'), modalDescription: $('#modalDescription'), modalIncludes: $('#modalIncludes'), modalIncludesWrap: $('#modalIncludesWrap'), modalPrice: $('#modalPrice'), modalFavorite: $('#modalFavoriteBtn'), modalAdd: $('#modalAddBtn'),
-    checkoutModal: $('#checkoutModal'), checkoutForm: $('#checkoutForm'), toast: $('#toast'), configWarning: $('#configWarning')
+    toast: $('#toast')
   };
 
   function safeLoad(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } }
@@ -123,32 +123,48 @@
     openModal(els.productModal);
   }
 
-  function buildOrderMessage(formData={}) {
+  function buildOrderMessage() {
     const items=Object.entries(cart).map(([id,qty])=>({p:getProduct(id),qty})).filter(x=>x.p);
-    const lines=[`Olá! Gostaria de solicitar um orçamento na ${CONFIG.nome || 'Leal Festas & Decorações'}.`, '', '🛒 *Itens selecionados:*'];
-    items.forEach(({p,qty},i)=>lines.push(`${i+1}. ${qty}x ${p.nome}`));
-    if(formData.nome) lines.push('',`👤 Nome: ${formData.nome}`); if(formData.telefone) lines.push(`📞 Telefone: ${formData.telefone}`); if(formData.data) lines.push(`📅 Data da festa: ${formatDate(formData.data)}`); if(formData.local) lines.push(`📍 Local: ${formData.local}`); if(formData.observacoes) lines.push(`📝 Observações: ${formData.observacoes}`);
-    lines.push('', 'Gostaria de verificar disponibilidade e valor final.'); return lines.join('\n');
+    const lines=[`Olá! Gostaria de solicitar um orçamento na ${CONFIG.nome || 'Leal Festas & Decorações'} 🎉`, '', '🛒 *Itens selecionados:*'];
+    items.forEach(({p,qty})=>{
+      const unit = p.unidade ? `/${p.unidade}` : '';
+      const price = Number.isFinite(Number(p.preco)) && Number(p.preco) > 0 ? ` — ${money(p.preco)}${unit}` : ' — valor sob consulta';
+      lines.push(`• ${qty}x ${p.nome}${price}`);
+    });
+    lines.push('', 'Gostaria de verificar disponibilidade e o valor final.');
+    return lines.join('\n');
   }
-  function formatDate(v) { if(!v) return ''; const [y,m,d]=v.split('-'); return `${d}/${m}/${y}`; }
-  function getFormData() { return Object.fromEntries(new FormData(els.checkoutForm).entries()); }
-  function openWhatsApp(message) { if(!isConfigured(CONFIG.whatsapp)) { els.configWarning.hidden=false; toast('Configure o WhatsApp em js/config.js'); return; } window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(message)}`,'_blank','noopener'); }
+
+  function openWhatsApp(message) {
+    if(!isConfigured(CONFIG.whatsapp)) {
+      toast('Configure o WhatsApp em js/config.js');
+      return;
+    }
+    window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(message)}`,'_blank','noopener');
+  }
   function genericWhatsApp() { openWhatsApp(`Olá! Gostaria de saber mais sobre a ${CONFIG.nome || 'Leal Festas & Decorações'}.`); }
 
-  function checkout() { if(cartUnits()===0) { toast('Seu carrinho está vazio'); return; } closeDrawer(els.cartDrawer); els.configWarning.hidden=isConfigured(CONFIG.whatsapp) || isConfigured(CONFIG.email); openModal(els.checkoutModal); }
+  function checkout(e) {
+    if(cartUnits()===0) { toast('Seu carrinho está vazio'); return; }
+    const button = e?.currentTarget;
+    if(button) {
+      const r=button.getBoundingClientRect();
+      burst(r.left+r.width/2,r.top+r.height/2,28);
+    }
+    // O clique do cliente já é a intenção de contato: sem formulário intermediário.
+    closeDrawer(els.cartDrawer);
+    openWhatsApp(buildOrderMessage());
+  }
 
   function bindStaticActions() {
     els.search.addEventListener('input',()=>{searchTerm=els.search.value;renderCatalog();}); els.cartBtn.addEventListener('click',()=>openDrawer(els.cartDrawer)); els.floatingCart.addEventListener('click',()=>openDrawer(els.cartDrawer)); $('#ctaCartBtn').addEventListener('click',()=>openDrawer(els.cartDrawer));
     els.favoritesBtn.addEventListener('click',()=>openDrawer(els.favoritesDrawer));
-    $$('[data-close-drawer]').forEach(x=>x.addEventListener('click',()=>closeDrawer(els.cartDrawer))); $$('[data-close-favorites]').forEach(x=>x.addEventListener('click',()=>closeDrawer(els.favoritesDrawer))); $$('[data-close-product]').forEach(x=>x.addEventListener('click',()=>closeModal(els.productModal))); $$('[data-close-checkout]').forEach(x=>x.addEventListener('click',()=>closeModal(els.checkoutModal)));
+    $$('[data-close-drawer]').forEach(x=>x.addEventListener('click',()=>closeDrawer(els.cartDrawer))); $$('[data-close-favorites]').forEach(x=>x.addEventListener('click',()=>closeDrawer(els.favoritesDrawer))); $$('[data-close-product]').forEach(x=>x.addEventListener('click',()=>closeModal(els.productModal)));
     $('#clearCartBtn').addEventListener('click',()=>{cart={};save();updateCounts();renderCart();toast('Carrinho limpo');}); $('#checkoutBtn').addEventListener('click',checkout);
     $('#addAllFavoritesBtn').addEventListener('click',()=>{favorites.forEach(id=>cart[id]=(cart[id]||0)+1);save();updateCounts();renderCart();closeDrawer(els.favoritesDrawer);openDrawer(els.cartDrawer);toast('Favoritos adicionados 🎉');});
     els.modalFavorite.addEventListener('click',()=>activeProduct&&toggleFavorite(activeProduct.id)); els.modalAdd.addEventListener('click',e=>{if(!activeProduct)return;addToCart(activeProduct.id);const r=e.currentTarget.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,18);});
     $('#heroWhatsappBtn').addEventListener('click',genericWhatsApp); $('#ctaWhatsappBtn').addEventListener('click',genericWhatsApp); $('#footerWhatsappBtn').addEventListener('click',genericWhatsApp);
-    els.checkoutForm.addEventListener('submit',e=>{e.preventDefault(); const r=e.submitter?.getBoundingClientRect(); if(r) burst(r.left+r.width/2,r.top+r.height/2,28); openWhatsApp(buildOrderMessage(getFormData()));});
-    $('#emailOrderBtn').addEventListener('click',()=>{ const msg=buildOrderMessage(getFormData()); if(!isConfigured(CONFIG.email)){els.configWarning.hidden=false;toast('Configure o e-mail em js/config.js');return;} location.href=`mailto:${CONFIG.email}?subject=${encodeURIComponent('Orçamento - Leal Festas & Decorações')}&body=${encodeURIComponent(msg)}`; });
-    $('#copyOrderBtn').addEventListener('click',async()=>{ try{await navigator.clipboard.writeText(buildOrderMessage(getFormData()));toast('Resumo copiado');}catch{toast('Não foi possível copiar automaticamente');} });
-    document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeDrawer(els.cartDrawer);closeDrawer(els.favoritesDrawer);closeModal(els.productModal);closeModal(els.checkoutModal);} });
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeDrawer(els.cartDrawer);closeDrawer(els.favoritesDrawer);closeModal(els.productModal);} });
   }
 
   function setupBusinessInfo() { $('#year').textContent=new Date().getFullYear(); $('#serviceArea').textContent=CONFIG.areaAtendimento||'Consulte nossa área de atendimento'; const ig=$('#instagramLink'); if(isConfigured(CONFIG.instagram)) ig.href=CONFIG.instagram; else ig.addEventListener('click',e=>{e.preventDefault();toast('Configure o Instagram em js/config.js');}); }
