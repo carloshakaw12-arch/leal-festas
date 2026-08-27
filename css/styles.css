@@ -182,3 +182,7 @@ img { display: block; max-width: 100%; }
 .cart-whatsapp-hint { margin: 9px 0 0; text-align: center; color: var(--muted); font-size: .72rem; line-height: 1.35; }
 .btn-whatsapp { background: #247a45; color: #fff; border-color: #247a45; }
 .btn-whatsapp:hover { background: #1e683b; border-color: #1e683b; }
+
+/* Página abre diretamente no catálogo */
+.catalog-section { padding-top: 64px; }
+@media (max-width: 780px) { .catalog-section { padding-top: 46px; } }

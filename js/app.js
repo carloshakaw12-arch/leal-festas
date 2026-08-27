@@ -62,7 +62,7 @@
   function renderCategories() {
     const present = ['todos', ...Object.keys(CATEGORY_META).filter(c => c !== 'todos' && PRODUCTS.some(p => p.categoria === c))];
     els.categoryFilters.innerHTML = present.map(c => `<button class="filter-btn ${c===activeCategory?'active':''}" data-category="${c}">${CATEGORY_META[c][1]}</button>`).join('');
-    els.quickCategories.innerHTML = present.filter(c=>c!=='todos').map(c => `<button class="quick-category" data-category="${c}"><span>${CATEGORY_META[c][0]}</span>${CATEGORY_META[c][1]}</button>`).join('');
+    if (els.quickCategories) els.quickCategories.innerHTML = present.filter(c=>c!=='todos').map(c => `<button class="quick-category" data-category="${c}"><span>${CATEGORY_META[c][0]}</span>${CATEGORY_META[c][1]}</button>`).join('');
     $$('[data-category]').forEach(btn => btn.addEventListener('click', () => { activeCategory=btn.dataset.category; renderCategories(); renderCatalog(); document.querySelector('#catalogo').scrollIntoView({behavior:'smooth'}); }));
   }
 
@@ -163,7 +163,7 @@
     $('#clearCartBtn').addEventListener('click',()=>{cart={};save();updateCounts();renderCart();toast('Carrinho limpo');}); $('#checkoutBtn').addEventListener('click',checkout);
     $('#addAllFavoritesBtn').addEventListener('click',()=>{favorites.forEach(id=>cart[id]=(cart[id]||0)+1);save();updateCounts();renderCart();closeDrawer(els.favoritesDrawer);openDrawer(els.cartDrawer);toast('Favoritos adicionados 🎉');});
     els.modalFavorite.addEventListener('click',()=>activeProduct&&toggleFavorite(activeProduct.id)); els.modalAdd.addEventListener('click',e=>{if(!activeProduct)return;addToCart(activeProduct.id);const r=e.currentTarget.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,18);});
-    $('#heroWhatsappBtn').addEventListener('click',genericWhatsApp); $('#ctaWhatsappBtn').addEventListener('click',genericWhatsApp); $('#footerWhatsappBtn').addEventListener('click',genericWhatsApp);
+    const heroWhatsappBtn = $('#heroWhatsappBtn'); if (heroWhatsappBtn) heroWhatsappBtn.addEventListener('click',genericWhatsApp); $('#ctaWhatsappBtn').addEventListener('click',genericWhatsApp); $('#footerWhatsappBtn').addEventListener('click',genericWhatsApp);
     document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeDrawer(els.cartDrawer);closeDrawer(els.favoritesDrawer);closeModal(els.productModal);} });
   }
 
