@@ -1,37 +1,19 @@
-# Leal D’Coração — atualização de marca v4
+# Leal D’Coração — Ajuste de proporção v5
 
-Atualiza a identidade visual e os textos do site para:
+Atualização visual somente da marca.
 
-**Leal D’Coração**  
-**Festas & Decorações**
+- `D’Coração` passa a ter aproximadamente 60% da escala visual de `Leal`.
+- Espaçamento entre os dois nomes foi reduzido.
+- Ajustado no cabeçalho, animação de entrada, rodapé e Admin.
+- `Festas & Decorações` permanece exatamente com o mesmo tamanho/estilo.
+- Não altera catálogo, WhatsApp, fotos, carrinho ou `config.js`.
 
-## O que muda
-- Cabeçalho / marca do site
-- Animação de entrada
-- Título e descrição da aba
-- Seção Sobre
-- Rodapé e copyright
-- Nome usado nas mensagens automáticas do WhatsApp
-- Identificação da página Admin
-
-## O que NÃO muda
-- Catálogo
-- Fotos
-- Carrinho e favoritos
-- Número do WhatsApp
-- Instagram / e-mail / área atendida
-- Dados já configurados em `js/config.js`
-
-Por isso esta atualização **não inclui nem substitui `js/config.js`**. Seu número configurado permanece intacto.
-
-## Instalação
-Extraia o conteúdo deste ZIP dentro da pasta atual `leal-festas-site` e aceite substituir os arquivos.
+Extraia sobre a pasta raiz `leal-festas-site` e aceite substituir os dois arquivos.
 
 Depois:
+
 ```powershell
 git add .
-git commit -m "Atualiza marca para Leal D Coracao"
+git commit -m "Ajusta proporcao da marca Leal D Coracao"
 git push
 ```
-
-O Render fará o deploy automático se estiver conectado à branch `main`.

@@ -188,25 +188,25 @@ img { display: block; max-width: 100%; }
 @media (max-width: 780px) { .catalog-section { padding-top: 46px; } }
 
 
-/* Marca v4 — Leal D’Coração */
-.brand-name { display: inline-flex; align-items: baseline; justify-content: center; gap: .42rem; white-space: nowrap; }
-.brand-heart { font-family: Georgia, "Times New Roman", serif; color: var(--text); font-size: .92rem; font-weight: 500; letter-spacing: -.025em; line-height: 1; }
+/* Marca v5 — proporção profissional Leal D’Coração */
+.brand-name { display: inline-flex; align-items: baseline; justify-content: center; gap: .30rem; white-space: nowrap; }
+.brand-heart { font-family: Georgia, "Times New Roman", serif; color: var(--text); font-weight: 600; letter-spacing: -.035em; line-height: .96; }
 .brand .brand-name { line-height: 1; }
 .brand .brand-script { font-size: 1.95rem; }
-.brand .brand-heart { font-size: .92rem; }
-.entry-brand .brand-name { gap: clamp(.45rem,1.2vw,.85rem); align-items: baseline; }
-.entry-brand .brand-heart { font-size: clamp(2rem,5vw,3.7rem); color: var(--text); }
-.footer-brand .brand-name { justify-content: flex-start; gap: .45rem; }
-.footer-brand .brand-heart { color: #f0dddd; font-size: 1.05rem; }
+.brand .brand-heart { font-size: 1.18rem; transform: translateY(-.025em); }
+.entry-brand .brand-name { gap: clamp(.32rem,.8vw,.62rem); align-items: baseline; }
+.entry-brand .brand-heart { font-size: clamp(3rem,7.4vw,5.45rem); color: var(--text); transform: translateY(-.02em); }
+.footer-brand .brand-name { justify-content: flex-start; gap: .34rem; }
+.footer-brand .brand-heart { color: #f0dddd; font-size: 1.72rem; transform: translateY(-.025em); }
 @media (max-width: 780px) {
   .brand { min-width: 0; }
-  .brand .brand-name { gap: .28rem; }
+  .brand .brand-name { gap: .22rem; }
   .brand .brand-script { font-size: 1.55rem; }
-  .brand .brand-heart { font-size: .72rem; }
+  .brand .brand-heart { font-size: .94rem; }
   .brand-subtitle { font-size: .46rem; letter-spacing: .12em; }
-  .entry-brand .brand-heart { font-size: clamp(1.65rem,8vw,2.5rem); }
+  .entry-brand .brand-heart { font-size: clamp(2.25rem,10.5vw,3.65rem); }
 }
 @media (max-width: 390px) {
   .brand .brand-script { font-size: 1.42rem; }
-  .brand .brand-heart { font-size: .66rem; }
+  .brand .brand-heart { font-size: .86rem; }
 }
