@@ -186,3 +186,27 @@ img { display: block; max-width: 100%; }
 /* Página abre diretamente no catálogo */
 .catalog-section { padding-top: 64px; }
 @media (max-width: 780px) { .catalog-section { padding-top: 46px; } }
+
+
+/* Marca v4 — Leal D’Coração */
+.brand-name { display: inline-flex; align-items: baseline; justify-content: center; gap: .42rem; white-space: nowrap; }
+.brand-heart { font-family: Georgia, "Times New Roman", serif; color: var(--text); font-size: .92rem; font-weight: 500; letter-spacing: -.025em; line-height: 1; }
+.brand .brand-name { line-height: 1; }
+.brand .brand-script { font-size: 1.95rem; }
+.brand .brand-heart { font-size: .92rem; }
+.entry-brand .brand-name { gap: clamp(.45rem,1.2vw,.85rem); align-items: baseline; }
+.entry-brand .brand-heart { font-size: clamp(2rem,5vw,3.7rem); color: var(--text); }
+.footer-brand .brand-name { justify-content: flex-start; gap: .45rem; }
+.footer-brand .brand-heart { color: #f0dddd; font-size: 1.05rem; }
+@media (max-width: 780px) {
+  .brand { min-width: 0; }
+  .brand .brand-name { gap: .28rem; }
+  .brand .brand-script { font-size: 1.55rem; }
+  .brand .brand-heart { font-size: .72rem; }
+  .brand-subtitle { font-size: .46rem; letter-spacing: .12em; }
+  .entry-brand .brand-heart { font-size: clamp(1.65rem,8vw,2.5rem); }
+}
+@media (max-width: 390px) {
+  .brand .brand-script { font-size: 1.42rem; }
+  .brand .brand-heart { font-size: .66rem; }
+}

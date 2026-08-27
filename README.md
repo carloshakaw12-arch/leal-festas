@@ -1,21 +1,37 @@
-# Leal Festas — atualização v3
+# Leal D’Coração — atualização de marca v4
 
-Alteração solicitada:
-- removido todo o bloco hero inicial;
-- removida a faixa de categorias que ficava logo abaixo dele;
-- a página passa a abrir diretamente no catálogo;
-- mantidos cabeçalho, animação de entrada, catálogo, filtros, favoritos, carrinho, WhatsApp, seções inferiores e Admin;
-- JavaScript ajustado para não depender dos elementos removidos.
+Atualiza a identidade visual e os textos do site para:
 
-## Aplicação
-Copie estes arquivos sobre o projeto atual, preservando a mesma estrutura de pastas e aceitando substituir:
-- `index.html`
-- `css/styles.css`
-- `js/app.js`
+**Leal D’Coração**  
+**Festas & Decorações**
+
+## O que muda
+- Cabeçalho / marca do site
+- Animação de entrada
+- Título e descrição da aba
+- Seção Sobre
+- Rodapé e copyright
+- Nome usado nas mensagens automáticas do WhatsApp
+- Identificação da página Admin
+
+## O que NÃO muda
+- Catálogo
+- Fotos
+- Carrinho e favoritos
+- Número do WhatsApp
+- Instagram / e-mail / área atendida
+- Dados já configurados em `js/config.js`
+
+Por isso esta atualização **não inclui nem substitui `js/config.js`**. Seu número configurado permanece intacto.
+
+## Instalação
+Extraia o conteúdo deste ZIP dentro da pasta atual `leal-festas-site` e aceite substituir os arquivos.
 
 Depois:
 ```powershell
 git add .
-git commit -m "Remove abertura e inicia site pelo catalogo"
+git commit -m "Atualiza marca para Leal D Coracao"
 git push
 ```
+
+O Render fará o deploy automático se estiver conectado à branch `main`.

@@ -1,7 +1,8 @@
 (() => {
   const CONFIG = window.LEAL_CONFIG || {};
+  const BRAND_NAME = 'Leal D’Coração — Festas & Decorações';
   const PRODUCTS = (window.LEAL_CATALOGO || []).filter(p => p.ativo !== false);
-  const STORAGE = { cart: 'leal_cart_v1', favorites: 'leal_favorites_v1', intro: 'leal_intro_seen_v1' };
+  const STORAGE = { cart: 'leal_cart_v1', favorites: 'leal_favorites_v1', intro: 'leal_intro_seen_v2' };
   const CATEGORY_META = {
     todos: ['✨','Todos'], kits: ['🎂','Kits'], baloes: ['🎈','Balões'], estrutura: ['🪑','Estrutura'], equipamentos: ['🔊','Equipamentos'], servicos: ['🎨','Serviços']
   };
@@ -125,7 +126,7 @@
 
   function buildOrderMessage() {
     const items=Object.entries(cart).map(([id,qty])=>({p:getProduct(id),qty})).filter(x=>x.p);
-    const lines=[`Olá! Gostaria de solicitar um orçamento na ${CONFIG.nome || 'Leal Festas & Decorações'} 🎉`, '', '🛒 *Itens selecionados:*'];
+    const lines=[`Olá! Gostaria de solicitar um orçamento na ${BRAND_NAME} 🎉`, '', '🛒 *Itens selecionados:*'];
     items.forEach(({p,qty})=>{
       const unit = p.unidade ? `/${p.unidade}` : '';
       const price = Number.isFinite(Number(p.preco)) && Number(p.preco) > 0 ? ` — ${money(p.preco)}${unit}` : ' — valor sob consulta';
@@ -142,7 +143,7 @@
     }
     window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(message)}`,'_blank','noopener');
   }
-  function genericWhatsApp() { openWhatsApp(`Olá! Gostaria de saber mais sobre a ${CONFIG.nome || 'Leal Festas & Decorações'}.`); }
+  function genericWhatsApp() { openWhatsApp(`Olá! Gostaria de saber mais sobre a ${BRAND_NAME}.`); }
 
   function checkout(e) {
     if(cartUnits()===0) { toast('Seu carrinho está vazio'); return; }
