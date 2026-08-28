@@ -1,4 +1,4 @@
-// Catálogo gerado pelo Leal D’Coração Admin em 26/08/2026, 23:26:06
+// Catálogo gerado pelo Leal D’Coração Admin em 28/08/2026, 08:43:50
 // Para esconder um item: ativo: false | Para destacar: destaque: true
 window.LEAL_CATALOGO = [
   {
@@ -6,7 +6,7 @@ window.LEAL_CATALOGO = [
     "nome": "Kit Safari",
     "categoria": "kits",
     "categoriaNome": "Kits de Festa",
-    "preco": 249.9,
+    "preco": 149.99,
     "unidade": "kit",
     "destaque": true,
     "ativo": true,
@@ -22,40 +22,16 @@ window.LEAL_CATALOGO = [
     "complementos": [],
     "imagens": [
       {
-        "src": "public/images/demo/safari-1.svg",
-        "alt": "Demonstração do Kit Safari"
-      },
-      {
-        "src": "public/images/demo/safari-2.svg",
-        "alt": "Demonstração de detalhes do Kit Safari"
-      },
-      {
-        "alt": "Kit Safari — foto 1",
-        "variantes": {
-          "sm": "public/images/catalogo/kit-safari/01-133599247332355936-800.webp",
-          "md": "public/images/catalogo/kit-safari/01-133599247332355936-1800.webp",
-          "xl": "public/images/catalogo/kit-safari/01-133599247332355936-2560.webp"
-        }
-      },
-      {
-        "alt": "Kit Safari — foto 1",
-        "variantes": {
-          "sm": "public/images/catalogo/kit-safari/01-133599247332355936-800.webp",
-          "md": "public/images/catalogo/kit-safari/01-133599247332355936-1800.webp",
-          "xl": "public/images/catalogo/kit-safari/01-133599247332355936-2560.webp"
-        }
-      },
-      {
-        "src": "public/images/catalogo/kit-safari/01-133599247332355936-800 (1).webp",
-        "alt": "Kit Safari"
-      },
-      {
         "alt": "Kit Safari — foto 1",
         "variantes": {
           "sm": "public/images/catalogo/kit-safari/01-134293249227381202-800.webp",
           "md": "public/images/catalogo/kit-safari/01-134293249227381202-1800.webp",
           "xl": "public/images/catalogo/kit-safari/01-134293249227381202-2560.webp"
         }
+      },
+      {
+        "src": "public/images/catalogo/kit-safari/134308388294141102.jpg",
+        "alt": "Kit Safari"
       }
     ]
   },
@@ -68,7 +44,7 @@ window.LEAL_CATALOGO = [
     "unidade": "kit",
     "destaque": true,
     "ativo": true,
-    "demo": true,
+    "demo": false,
     "descricao": "Tons delicados e elementos de conto de fadas para uma comemoração encantadora.",
     "inclui": [
       "Painel temático",
@@ -80,12 +56,8 @@ window.LEAL_CATALOGO = [
     "complementos": [],
     "imagens": [
       {
-        "src": "public/images/demo/princesa-1.svg",
-        "alt": "Demonstração do Kit Princesa"
-      },
-      {
-        "src": "public/images/demo/princesa-2.svg",
-        "alt": "Demonstração de detalhes do Kit Princesa"
+        "src": "public/images/catalogo/kit-princesa/134286340820828625.jpg",
+        "alt": "Kit Princesa"
       }
     ]
   },
@@ -110,12 +82,8 @@ window.LEAL_CATALOGO = [
     "complementos": [],
     "imagens": [
       {
-        "src": "public/images/demo/stitch-1.svg",
-        "alt": "Demonstração do Kit Stitch"
-      },
-      {
-        "src": "public/images/demo/stitch-2.svg",
-        "alt": "Demonstração de detalhes do Kit Stitch"
+        "src": "public/images/catalogo/kit-stitch/134301015538512633.jpg",
+        "alt": "Kit Stitch"
       }
     ]
   },
