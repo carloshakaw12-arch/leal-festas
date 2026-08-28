@@ -8,7 +8,7 @@
     area: 'Guapimirim - RJ'
   };
   const PRODUCTS = (window.LEAL_CATALOGO || []).filter(p => p.ativo !== false);
-  const STORAGE = { cart: 'leal_cart_v1', favorites: 'leal_favorites_v1', intro: 'leal_intro_seen_v2' };
+  const STORAGE = { cart: 'leal_cart_v1', favorites: 'leal_favorites_v1', intro: 'leal_intro_seen_v3' };
   const CATEGORY_META = {
     todos: ['✨','Todos'], kits: ['🎂','Kits'], baloes: ['🎈','Balões'], estrutura: ['🪑','Estrutura'], equipamentos: ['🔊','Equipamentos'], servicos: ['🎨','Serviços']
   };
@@ -33,7 +33,13 @@
   function save() { localStorage.setItem(STORAGE.cart, JSON.stringify(cart)); localStorage.setItem(STORAGE.favorites, JSON.stringify(favorites)); }
   function money(v) { return new Intl.NumberFormat(CONFIG.locale || 'pt-BR', { style: 'currency', currency: CONFIG.moeda || 'BRL' }).format(v || 0); }
   function getProduct(id) { return PRODUCTS.find(p => p.id === id); }
-  function imageSrc(img, preferred='md') { return img?.variantes?.[preferred] || img?.src || img?.variantes?.xl || img?.variantes?.sm || ''; }
+  const IMAGE_PLACEHOLDER = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900"><rect width="1200" height="900" fill="#f7efec"/><circle cx="600" cy="370" r="74" fill="#ead7d3"/><path d="M420 590l130-135 105 105 85-80 120 110H420z" fill="#dfc3c0"/><text x="600" y="700" text-anchor="middle" font-family="Arial,sans-serif" font-size="38" fill="#8c7276">Foto em atualização</text></svg>')}`;
+  function imageCandidates(img, preferred='md') {
+    const v=img?.variantes || {};
+    const order = preferred==='xl' ? [v.xl,v.md,v.sm,img?.src] : preferred==='sm' ? [v.sm,v.md,v.xl,img?.src] : [v.md,v.xl,v.sm,img?.src];
+    return [...new Set(order.filter(Boolean))];
+  }
+  function imageSrc(img, preferred='md') { return imageCandidates(img, preferred)[0] || IMAGE_PLACEHOLDER; }
   function imageSrcset(img) { if (!img?.variantes) return ''; const v=img.variantes; return [[v.sm,'800w'],[v.md,'1800w'],[v.xl,'2560w']].filter(x=>x[0]).map(x=>x.join(' ')).join(', '); }
   function imageAttrs(img, sizes='(max-width: 780px) 50vw, 25vw') { const src=imageSrc(img); const set=imageSrcset(img); return `src="${src}"${set?` srcset="${set}" sizes="${sizes}"`:''}`; }
   function isDemoImage(img) { const paths=[img?.src,img?.variantes?.sm,img?.variantes?.md,img?.variantes?.xl].filter(Boolean); return paths.some(x=>String(x).includes('/demo/')); }
@@ -71,10 +77,16 @@
 
   function initIntro() {
     const intro = $('#entryCelebration');
+    if (!intro) return;
     if (new URLSearchParams(location.search).has('skipIntro')) { intro.style.display = 'none'; return; }
-    if (localStorage.getItem(STORAGE.intro)) { intro.style.display = 'none'; return; }
+    // Exibe uma vez por aba/sessão. Antes ficava salvo permanentemente no localStorage e parecia 'falhar' nas visitas seguintes.
+    if (sessionStorage.getItem(STORAGE.intro)) { intro.style.display = 'none'; return; }
+    intro.style.display = 'grid';
+    intro.classList.remove('entry-replay');
+    void intro.offsetWidth;
+    intro.classList.add('entry-replay');
     entryConfetti();
-    setTimeout(() => { intro.style.display = 'none'; localStorage.setItem(STORAGE.intro,'1'); }, 3150);
+    setTimeout(() => { intro.style.display = 'none'; sessionStorage.setItem(STORAGE.intro,'1'); }, 3250);
   }
 
   function entryConfetti() {
@@ -102,6 +114,24 @@
     $$('[data-category]').forEach(btn => btn.addEventListener('click', () => { activeCategory=btn.dataset.category; renderCategories(); renderCatalog(); document.querySelector('#catalogo').scrollIntoView({behavior:'smooth'}); }));
   }
 
+  function bindImageFallback(imgEl, imgData, preferred='md', onFinalFail=null) {
+    if (!imgEl) return;
+    const candidates=imageCandidates(imgData, preferred);
+    let index=0;
+    imgEl.onerror=()=>{
+      index += 1;
+      if(index < candidates.length){
+        imgEl.removeAttribute('srcset');
+        imgEl.src=candidates[index];
+        return;
+      }
+      imgEl.removeAttribute('srcset');
+      imgEl.src=IMAGE_PLACEHOLDER;
+      imgEl.onerror=null;
+      if(typeof onFinalFail==='function') onFinalFail();
+    };
+  }
+
   function filteredProducts() {
     const term = searchTerm.trim().toLowerCase();
     return PRODUCTS.filter(p => (activeCategory==='todos'||p.categoria===activeCategory) && (!term || `${p.nome} ${p.categoriaNome} ${p.descricao}`.toLowerCase().includes(term))).sort((a,b)=>(b.destaque?1:0)-(a.destaque?1:0));
@@ -117,6 +147,7 @@
       </article>`;
     }).join('');
     bindProductActions();
+    $$('.product-image').forEach(imgEl=>{ const p=getProduct(imgEl.closest('[data-id]')?.dataset.id); const img=productImages(p)[0]||{}; bindImageFallback(imgEl,img,'md'); });
   }
 
   function bindProductActions() {
@@ -167,12 +198,13 @@
   function openProduct(id) {
     const p=getProduct(id); if(!p) return; activeProduct=p;
     const gallery=productImages(p); const mainImage=gallery[0] || {};
-    els.modalImage.src=imageSrc(mainImage,'xl'); els.modalImage.srcset=imageSrcset(mainImage); els.modalImage.sizes='(max-width: 780px) 100vw, 55vw'; els.modalImage.alt=mainImage.alt||p.nome; els.modalCategory.textContent=p.categoriaNome; els.modalTitle.textContent=p.nome; els.modalDescription.textContent=p.descricao; els.modalPrice.textContent=money(p.preco);
+    els.modalImage.src=imageSrc(mainImage,'xl'); els.modalImage.srcset=imageSrcset(mainImage); els.modalImage.sizes='(max-width: 780px) 100vw, 55vw'; els.modalImage.alt=mainImage.alt||p.nome; bindImageFallback(els.modalImage,mainImage,'xl'); els.modalCategory.textContent=p.categoriaNome; els.modalTitle.textContent=p.nome; els.modalDescription.textContent=p.descricao; els.modalPrice.textContent=money(p.preco);
     els.modalIncludesWrap.hidden=!p.inclui?.length; els.modalIncludes.innerHTML=(p.inclui||[]).map(x=>`<li>${x}</li>`).join('');
     const complements=suggestedComplements(p); els.modalComplementsWrap.hidden=!complements.length; els.modalComplements.innerHTML=complements.map(c=>{const img=productImages(c)[0]||{};return `<article class="complement-card"><button class="complement-open" data-complement-open="${c.id}" aria-label="Ver ${c.nome}"><img src="${imageSrc(img,'sm')}" alt="${img.alt||c.nome}" loading="lazy"><span><strong>${c.nome}</strong><small>${money(c.preco)} / ${c.unidade||'item'}</small></span></button><button class="complement-add" data-complement-add="${c.id}">+ Adicionar</button></article>`}).join('');
     els.modalThumbs.hidden=gallery.length<=1; els.modalThumbs.innerHTML=gallery.length>1 ? gallery.map((img,i)=>`<button class="${i===0?'active':''}" data-thumb="${i}"><img src="${imageSrc(img,'sm')}" alt=""></button>`).join('') : '';
+    $$('[data-thumb] img').forEach((imgEl,i)=>bindImageFallback(imgEl,gallery[i],'sm',()=>{ const btn=imgEl.closest('[data-thumb]'); if(btn) btn.hidden=true; }));
     els.modalFavorite.classList.toggle('active',favorites.includes(p.id)); els.modalFavorite.textContent=favorites.includes(p.id)?'♥':'♡';
-    $$('[data-thumb]').forEach(b=>b.addEventListener('click',()=>{ const i=Number(b.dataset.thumb); els.modalImage.src=imageSrc(gallery[i],'xl'); els.modalImage.srcset=imageSrcset(gallery[i]); els.modalImage.alt=gallery[i].alt||p.nome; $$('[data-thumb]').forEach(x=>x.classList.remove('active')); b.classList.add('active'); }));
+    $$('[data-thumb]').forEach(b=>b.addEventListener('click',()=>{ const i=Number(b.dataset.thumb); els.modalImage.src=imageSrc(gallery[i],'xl'); els.modalImage.srcset=imageSrcset(gallery[i]); els.modalImage.alt=gallery[i].alt||p.nome; bindImageFallback(els.modalImage,gallery[i],'xl'); $$('[data-thumb]').forEach(x=>x.classList.remove('active')); b.classList.add('active'); }));
     $$('[data-complement-open]').forEach(b=>b.addEventListener('click',()=>openProduct(b.dataset.complementOpen)));
     $$('[data-complement-add]').forEach(b=>b.addEventListener('click',e=>{ addToCart(b.dataset.complementAdd); const r=e.currentTarget.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,12); }));
     trackMeta('ViewContent',{content_ids:[p.id],content_name:p.nome,content_type:'product',value:Number(p.preco||0),currency:CONFIG.moeda||'BRL'});

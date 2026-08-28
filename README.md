@@ -1,22 +1,11 @@
-# Leal D’Coração — Atualização v8 (galeria/fotos)
+# Leal D’Coração — Atualização V9
 
-Corrige o comportamento das fotos no Admin e no site:
+Correções:
+- Intro com balões passa a aparecer uma vez por aba/sessão, em vez de ficar permanentemente marcada como já vista.
+- Corrigida a animação/escala dos três balões.
+- Adicionado cache-busting para CSS/JS da V9.
+- Galeria tenta automaticamente 2560 -> 1800 -> 800 quando uma resolução não existe.
+- Imagens ausentes não aparecem mais como ícone quebrado: entram em placeholder "Foto em atualização".
+- Miniaturas que não possuem nenhum arquivo válido são ocultadas.
 
-- 800/1800/2560 passam a ser tratados como **3 resoluções da mesma foto**, nunca 3 fotos distintas.
-- O Admin online mostra uma prévia local imediatamente após otimizar/selecionar, mesmo antes dos arquivos existirem no Render.
-- Ao adicionar a primeira foto real, imagens de demonstração (`/demo/`) são removidas automaticamente do produto.
-- O site também agrupa automaticamente catálogos antigos que tenham 800/1800/2560 cadastrados separadamente.
-- Se um produto tiver apenas 1 foto real, a faixa de miniaturas é ocultada.
-- Com 2 ou mais fotos reais, aparece uma miniatura por foto original, não por resolução.
-
-## Aplicação
-Extraia sobre a raiz `leal-festas-site`, substituindo:
-- `admin/admin.js`
-- `js/app.js`
-
-Depois:
-```powershell
-git add .
-git commit -m "Corrige galeria e variantes de fotos"
-git push
-```
+Importante: esta atualização evita a interface quebrada, mas as fotos reais ainda precisam existir no GitHub/Render nos caminhos gravados em data/catalogo.js.
