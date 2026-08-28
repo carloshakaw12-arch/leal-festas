@@ -4,6 +4,7 @@
   const CAT_NAMES = { kits:'Kits de Festa', baloes:'Balões', estrutura:'Estrutura', equipamentos:'Equipamentos', servicos:'Serviços' };
   let products = loadDraft() || structuredCloneSafe(SOURCE);
   let selected = products[0]?.id || null;
+  const LOCAL_PREVIEWS = new Map();
 
   const $ = s => document.querySelector(s);
   const els = {
@@ -16,12 +17,33 @@
   function current(){ return products.find(p=>p.id===selected); }
   function esc(s=''){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])); }
   function slug(s=''){ return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
-  function imageUrl(img){ return img?.variantes?.sm || img?.src || img?.variantes?.md || img?.variantes?.xl || '../public/images/favicon.svg'; }
+  function imageKey(img){ return img?.variantes?.sm || img?.src || img?.variantes?.md || img?.variantes?.xl || ''; }
+  function imageUrl(img){ const key=imageKey(img); return LOCAL_PREVIEWS.get(key) || (key ? `../${key}` : '../public/images/favicon.svg'); }
+  function isDemoImage(img){ const paths=[img?.src,img?.variantes?.sm,img?.variantes?.md,img?.variantes?.xl].filter(Boolean); return paths.some(x=>String(x).includes('/demo/')); }
+  function addRealImages(product,newImages){
+    const existing=(product.imagens||[]).filter(img=>!isDemoImage(img));
+    product.imagens=[...existing,...newImages];
+    product.demo=false;
+  }
+  function normalizeAdminImages(images=[]){
+    const out=[]; const groups=new Map();
+    for(const img of images||[]){
+      if(img?.variantes && Object.keys(img.variantes).length){ out.push(img); continue; }
+      const src=img?.src||''; const m=src.match(/^(.*)-(800|1800|2560)\.webp$/i);
+      if(!m){ if(src) out.push(img); continue; }
+      const base=m[1], width=m[2], key=width==='800'?'sm':width==='1800'?'md':'xl';
+      if(!groups.has(base)) groups.set(base,{alt:img.alt||'',variantes:{}});
+      groups.get(base).variantes[key]=src;
+    }
+    out.push(...groups.values());
+    const real=out.filter(img=>!isDemoImage(img));
+    return real.length ? real : out;
+  }
   function toast(msg){ els.toast.textContent=msg; els.toast.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>els.toast.classList.remove('show'),1800); }
 
   function renderList(){
     els.count.textContent=`${products.length} ${products.length===1?'item':'itens'}`;
-    els.list.innerHTML=products.map((p,i)=>`<button class="product-row ${p.id===selected?'active':''}" data-select="${esc(p.id)}"><img src="../${esc(imageUrl(p.imagens?.[0]))}" onerror="this.src='../public/images/favicon.svg'" alt=""><span><strong>${esc(p.nome)}</strong><small>${esc(p.categoriaNome||CAT_NAMES[p.categoria]||p.categoria)} • R$ ${Number(p.preco||0).toFixed(2).replace('.',',')}</small></span><span class="badges">${p.destaque?'⭐ ':''}${p.ativo===false?'🔴':'🟢'}</span></button>`).join('');
+    els.list.innerHTML=products.map((p,i)=>`<button class="product-row ${p.id===selected?'active':''}" data-select="${esc(p.id)}"><img src="${esc(imageUrl(p.imagens?.[0]))}" onerror="this.onerror=null;this.src='../public/images/favicon.svg'" alt=""><span><strong>${esc(p.nome)}</strong><small>${esc(p.categoriaNome||CAT_NAMES[p.categoria]||p.categoria)} • R$ ${Number(p.preco||0).toFixed(2).replace('.',',')}</small></span><span class="badges">${p.destaque?'⭐ ':''}${p.ativo===false?'🔴':'🟢'}</span></button>`).join('');
     document.querySelectorAll('[data-select]').forEach(b=>b.onclick=()=>{ selected=b.dataset.select; renderList(); renderEditor(); });
   }
 
@@ -37,7 +59,7 @@
   }
 
   function renderPhotos(images){
-    els.photos.innerHTML=images.map((img,i)=>`<div class="photo-row" data-photo="${i}"><img class="photo-preview" src="../${esc(imageUrl(img))}" onerror="this.src='../public/images/favicon.svg'" alt=""><div class="photo-fields"><label class="wide">Texto alternativo<input data-photo-field="alt" value="${esc(img.alt||'')}"></label><label class="wide">Arquivo único<input data-photo-field="src" value="${esc(img.src||'')}" placeholder="public/images/kits/safari/capa.webp"></label><label>800 px<input data-photo-field="sm" value="${esc(img.variantes?.sm||'')}" placeholder="...-800.webp"></label><label>1800 px<input data-photo-field="md" value="${esc(img.variantes?.md||'')}" placeholder="...-1800.webp"></label><label>2560 px<input data-photo-field="xl" value="${esc(img.variantes?.xl||'')}" placeholder="...-2560.webp"></label></div><button type="button" class="photo-remove" data-remove-photo="${i}" title="Remover foto">×</button></div>`).join('') || '<p class="help">Nenhuma foto. Clique em “Adicionar foto”.</p>';
+    els.photos.innerHTML=images.map((img,i)=>`<div class="photo-row" data-photo="${i}"><img class="photo-preview" src="${esc(imageUrl(img))}" onerror="this.onerror=null;this.src='../public/images/favicon.svg'" alt=""><div class="photo-fields"><label class="wide">Texto alternativo<input data-photo-field="alt" value="${esc(img.alt||'')}"></label><label class="wide">Arquivo único<input data-photo-field="src" value="${esc(img.src||'')}" placeholder="public/images/kits/safari/capa.webp"></label><label>800 px<input data-photo-field="sm" value="${esc(img.variantes?.sm||'')}" placeholder="...-800.webp"></label><label>1800 px<input data-photo-field="md" value="${esc(img.variantes?.md||'')}" placeholder="...-1800.webp"></label><label>2560 px<input data-photo-field="xl" value="${esc(img.variantes?.xl||'')}" placeholder="...-2560.webp"></label></div><button type="button" class="photo-remove" data-remove-photo="${i}" title="Remover foto">×</button></div>`).join('') || '<p class="help">Nenhuma foto. Use “Otimizar fotos originais” ou “Adicionar fotos prontas”.</p>';
     document.querySelectorAll('[data-remove-photo]').forEach(b=>b.onclick=()=>{ const p=current(); p.imagens.splice(Number(b.dataset.removePhoto),1); persist(); renderPhotos(p.imagens); renderList(); });
   }
 
@@ -151,14 +173,20 @@
         else zipEntries.push({path:`public/images/catalogo/${safeId}/${filename}`,blob});
         variants[key]=`public/images/catalogo/${safeId}/${filename}`;
       }
-      generated.push({alt:`${p.nome} — foto ${index+1}`,variantes:variants});
+      const generatedImage={alt:`${p.nome} — foto ${index+1}`,variantes:variants};
+      generated.push(generatedImage);
+      // No Admin online, os arquivos ainda não existem no Render.
+      // Use a versão 800 px recém-gerada como prévia temporária, sem criar 3 miniaturas.
+      const previewEntry=zipEntries.find(x=>x.path===variants.sm);
+      if(previewEntry) LOCAL_PREVIEWS.set(imageKey(generatedImage),URL.createObjectURL(previewEntry.blob));
+      else if(directSave && file) LOCAL_PREVIEWS.set(imageKey(generatedImage),URL.createObjectURL(file));
     }
     if(!directSave && zipEntries.length){
       setOptimizerStatus('Gerando pacote ZIP das fotos…','working');
       const zip=await makeZip(zipEntries);
       downloadBlob(`fotos-${safeId}.zip`,zip);
     }
-    p.imagens=[...(p.imagens||[]),...generated]; p.demo=false; persist(); renderPhotos(p.imagens); renderList();
+    addRealImages(p,generated); persist(); renderPhotos(p.imagens); renderList();
     setOptimizerStatus(directSave
       ? `Pronto: ${generated.length} foto(s) otimizadas e gravadas diretamente em public/images/catalogo/${safeId}/. Os caminhos já foram adicionados ao produto.`
       : `Pronto: ${generated.length} foto(s) processadas. Foi baixado o arquivo fotos-${safeId}.zip. Extraia esse ZIP sobre a pasta raiz leal-festas-site; ele já contém public/images/catalogo/${safeId}/ com os arquivos nos lugares corretos.`,'done');
@@ -169,6 +197,7 @@
     const p=current(); if(!p||!files.length)return;
     const safeId=slug(p.id||p.nome)||`produto-${Date.now()}`;
     const groups=new Map();
+    const previews=new Map();
     for(const file of files){
       const name=file.name;
       const match=name.match(/^(.*)-(800|1800|2560)\.webp$/i);
@@ -176,12 +205,19 @@
         const base=match[1], width=match[2], key=width==='800'?'sm':width==='1800'?'md':'xl';
         if(!groups.has(base)) groups.set(base,{alt:`${p.nome}`,variantes:{}});
         groups.get(base).variantes[key]=`public/images/catalogo/${safeId}/${name}`;
+        if(width==='800' || !previews.has(base)) previews.set(base,file);
       } else {
-        groups.set(`single-${name}`,{src:`public/images/catalogo/${safeId}/${name}`,alt:`${p.nome}`});
+        const groupKey=`single-${name}`;
+        groups.set(groupKey,{src:`public/images/catalogo/${safeId}/${name}`,alt:`${p.nome}`});
+        previews.set(groupKey,file);
       }
     }
-    const added=[...groups.values()];
-    p.imagens=[...(p.imagens||[]),...added]; p.demo=false; persist(); renderPhotos(p.imagens); renderList();
+    const added=[...groups.entries()].map(([groupKey,img])=>{
+      const previewFile=previews.get(groupKey);
+      if(previewFile) LOCAL_PREVIEWS.set(imageKey(img),URL.createObjectURL(previewFile));
+      return img;
+    });
+    addRealImages(p,added); persist(); renderPhotos(p.imagens); renderList();
     setOptimizerStatus(`${added.length} foto(s) adicionadas ao catálogo. Confirme que esses arquivos estão fisicamente em public/images/catalogo/${safeId}/ antes do git push.`,'done');
     toast('Fotos adicionadas ✓');
   }
@@ -192,5 +228,8 @@
   $('#optimizePhotoBtn').onclick=()=>$('#optimizeFileInput').click(); $('#optimizeFileInput').onchange=async e=>{ const files=[...e.target.files]; e.target.value=''; try{await optimizeOriginals(files);}catch(err){console.error(err);setOptimizerStatus(`Erro ao otimizar: ${err.message||err}`,'error');toast('Erro ao otimizar fotos');} };
   $('#nome').addEventListener('input',()=>{ const id=$('#id'); if(id.value.startsWith('novo-item-')) id.value=slug($('#nome').value); });
 
+  // Repara automaticamente rascunhos antigos: agrupa 800/1800/2560 e remove demos quando já há foto real.
+  products.forEach(p=>{ p.imagens=normalizeAdminImages(p.imagens||[]); if((p.imagens||[]).some(img=>!isDemoImage(img))) p.demo=false; });
+  persist();
   renderList(); renderEditor();
 })();
