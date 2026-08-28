@@ -58,6 +58,37 @@
     return real.length ? real : out;
   }
   function productImages(product) { return normalizeImages(product?.imagens || []); }
+  function galleryEntries(gallery=[], preferred='md') {
+    const seen=new Set(); const out=[];
+    (gallery||[]).forEach((img,imageIndex)=>{
+      imageCandidates(img,preferred).forEach(src=>{
+        if(!src || seen.has(src)) return;
+        seen.add(src); out.push({src,img,imageIndex});
+      });
+    });
+    return out;
+  }
+  function bindGalleryFallback(imgEl, gallery=[], preferred='md', onResolved=null, onFinalFail=null) {
+    if(!imgEl) return;
+    const entries=galleryEntries(gallery,preferred);
+    let index=0;
+    imgEl.removeAttribute('srcset'); imgEl.removeAttribute('sizes');
+    const tryEntry=()=>{
+      if(index>=entries.length){
+        imgEl.onerror=null; imgEl.onload=null; imgEl.src=IMAGE_PLACEHOLDER;
+        if(typeof onFinalFail==='function') onFinalFail();
+        return;
+      }
+      const entry=entries[index];
+      imgEl.onerror=()=>{ index+=1; tryEntry(); };
+      imgEl.onload=()=>{
+        imgEl.onerror=null; imgEl.onload=null;
+        if(typeof onResolved==='function') onResolved(entry);
+      };
+      imgEl.src=entry.src;
+    };
+    tryEntry();
+  }
   function cartUnits() { return Object.values(cart).reduce((sum, q) => sum + Number(q || 0), 0); }
   function isConfigured(value) { return value && !String(value).includes('SEU_'); }
   function setBodyLock() { const anyOpen = $$('.drawer[aria-hidden="false"], .modal[aria-hidden="false"]').length > 0; document.body.classList.toggle('no-scroll', anyOpen); }
@@ -142,12 +173,12 @@
     els.catalog.innerHTML = list.map(p => {
       const fav=favorites.includes(p.id); const img=productImages(p)[0];
       return `<article class="product-card reveal visible" data-id="${p.id}">
-        <div class="product-image-wrap" data-open-product="${p.id}"><img class="product-image" ${imageAttrs(img)} alt="${img.alt||p.nome}" loading="lazy" decoding="async">${p.demo?'<span class="demo-label">Imagem demo</span>':''}<button class="favorite-btn ${fav?'active':''}" data-favorite="${p.id}" aria-label="${fav?'Remover dos':'Adicionar aos'} favoritos">${fav?'♥':'♡'}</button></div>
+        <div class="product-image-wrap" data-open-product="${p.id}"><img class="product-image" src="${IMAGE_PLACEHOLDER}" alt="${img?.alt||p.nome}" loading="lazy" decoding="async">${p.demo?'<span class="demo-label">Imagem demo</span>':''}<button class="favorite-btn ${fav?'active':''}" data-favorite="${p.id}" aria-label="${fav?'Remover dos':'Adicionar aos'} favoritos">${fav?'♥':'♡'}</button></div>
         <div class="product-body"><div class="product-meta"><span class="category-tag">${p.categoriaNome}</span>${p.destaque?'<span title="Destaque">⭐</span>':''}</div><h3>${p.nome}</h3><p>${p.descricao}</p><div class="product-price"><span>A partir de</span><strong>${money(p.preco)}</strong><small> / ${p.unidade||'item'}</small></div><div class="product-actions"><button class="btn btn-secondary" data-open-product="${p.id}">Detalhes</button><button class="btn btn-primary" data-add="${p.id}">+ Carrinho</button></div></div>
       </article>`;
     }).join('');
     bindProductActions();
-    $$('.product-image').forEach(imgEl=>{ const p=getProduct(imgEl.closest('[data-id]')?.dataset.id); const img=productImages(p)[0]||{}; bindImageFallback(imgEl,img,'md'); });
+    $$('.product-image').forEach(imgEl=>{ const p=getProduct(imgEl.closest('[data-id]')?.dataset.id); bindGalleryFallback(imgEl,productImages(p),'md'); });
   }
 
   function bindProductActions() {
@@ -197,14 +228,18 @@
 
   function openProduct(id) {
     const p=getProduct(id); if(!p) return; activeProduct=p;
-    const gallery=productImages(p); const mainImage=gallery[0] || {};
-    els.modalImage.src=imageSrc(mainImage,'xl'); els.modalImage.srcset=imageSrcset(mainImage); els.modalImage.sizes='(max-width: 780px) 100vw, 55vw'; els.modalImage.alt=mainImage.alt||p.nome; bindImageFallback(els.modalImage,mainImage,'xl'); els.modalCategory.textContent=p.categoriaNome; els.modalTitle.textContent=p.nome; els.modalDescription.textContent=p.descricao; els.modalPrice.textContent=money(p.preco);
+    const gallery=productImages(p);
+    els.modalImage.src=IMAGE_PLACEHOLDER; els.modalImage.removeAttribute('srcset'); els.modalImage.alt=p.nome;
+    els.modalCategory.textContent=p.categoriaNome; els.modalTitle.textContent=p.nome; els.modalDescription.textContent=p.descricao; els.modalPrice.textContent=money(p.preco);
     els.modalIncludesWrap.hidden=!p.inclui?.length; els.modalIncludes.innerHTML=(p.inclui||[]).map(x=>`<li>${x}</li>`).join('');
     const complements=suggestedComplements(p); els.modalComplementsWrap.hidden=!complements.length; els.modalComplements.innerHTML=complements.map(c=>{const img=productImages(c)[0]||{};return `<article class="complement-card"><button class="complement-open" data-complement-open="${c.id}" aria-label="Ver ${c.nome}"><img src="${imageSrc(img,'sm')}" alt="${img.alt||c.nome}" loading="lazy"><span><strong>${c.nome}</strong><small>${money(c.preco)} / ${c.unidade||'item'}</small></span></button><button class="complement-add" data-complement-add="${c.id}">+ Adicionar</button></article>`}).join('');
-    els.modalThumbs.hidden=gallery.length<=1; els.modalThumbs.innerHTML=gallery.length>1 ? gallery.map((img,i)=>`<button class="${i===0?'active':''}" data-thumb="${i}"><img src="${imageSrc(img,'sm')}" alt=""></button>`).join('') : '';
-    $$('[data-thumb] img').forEach((imgEl,i)=>bindImageFallback(imgEl,gallery[i],'sm',()=>{ const btn=imgEl.closest('[data-thumb]'); if(btn) btn.hidden=true; }));
+    els.modalThumbs.hidden=gallery.length<=1; els.modalThumbs.innerHTML=gallery.length>1 ? gallery.map((img,i)=>`<button data-thumb="${i}"><img src="${IMAGE_PLACEHOLDER}" alt=""></button>`).join('') : '';
+    const refreshThumbStrip=()=>{ const visible=$$('[data-thumb]').filter(btn=>!btn.hidden); els.modalThumbs.hidden=visible.length<=1; };
+    $$('[data-thumb] img').forEach((imgEl,i)=>bindGalleryFallback(imgEl,[gallery[i]],'sm',()=>refreshThumbStrip(),()=>{ const btn=imgEl.closest('[data-thumb]'); if(btn) btn.hidden=true; refreshThumbStrip(); }));
+    const activateThumb=(imageIndex)=>{ $$('[data-thumb]').forEach(x=>x.classList.toggle('active',Number(x.dataset.thumb)===imageIndex)); };
+    bindGalleryFallback(els.modalImage,gallery,'xl',entry=>{ els.modalImage.alt=entry.img?.alt||p.nome; activateThumb(entry.imageIndex); });
     els.modalFavorite.classList.toggle('active',favorites.includes(p.id)); els.modalFavorite.textContent=favorites.includes(p.id)?'♥':'♡';
-    $$('[data-thumb]').forEach(b=>b.addEventListener('click',()=>{ const i=Number(b.dataset.thumb); els.modalImage.src=imageSrc(gallery[i],'xl'); els.modalImage.srcset=imageSrcset(gallery[i]); els.modalImage.alt=gallery[i].alt||p.nome; bindImageFallback(els.modalImage,gallery[i],'xl'); $$('[data-thumb]').forEach(x=>x.classList.remove('active')); b.classList.add('active'); }));
+    $$('[data-thumb]').forEach(b=>b.addEventListener('click',()=>{ const i=Number(b.dataset.thumb); bindGalleryFallback(els.modalImage,[gallery[i]],'xl',entry=>{ els.modalImage.alt=entry.img?.alt||p.nome; activateThumb(i); }); }));
     $$('[data-complement-open]').forEach(b=>b.addEventListener('click',()=>openProduct(b.dataset.complementOpen)));
     $$('[data-complement-add]').forEach(b=>b.addEventListener('click',e=>{ addToCart(b.dataset.complementAdd); const r=e.currentTarget.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,12); }));
     trackMeta('ViewContent',{content_ids:[p.id],content_name:p.nome,content_type:'product',value:Number(p.preco||0),currency:CONFIG.moeda||'BRL'});

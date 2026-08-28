@@ -1,11 +1,25 @@
-# Leal D’Coração — Atualização V9
+# Atualização V10 — seleção automática de foto válida
 
-Correções:
-- Intro com balões passa a aparecer uma vez por aba/sessão, em vez de ficar permanentemente marcada como já vista.
-- Corrigida a animação/escala dos três balões.
-- Adicionado cache-busting para CSS/JS da V9.
-- Galeria tenta automaticamente 2560 -> 1800 -> 800 quando uma resolução não existe.
-- Imagens ausentes não aparecem mais como ícone quebrado: entram em placeholder "Foto em atualização".
-- Miniaturas que não possuem nenhum arquivo válido são ocultadas.
+Esta atualização corrige o caso em que o catálogo/modal começa com um slot de imagem inválido e só mostra a foto real depois de clicar na miniatura.
 
-Importante: esta atualização evita a interface quebrada, mas as fotos reais ainda precisam existir no GitHub/Render nos caminhos gravados em data/catalogo.js.
+## O que muda
+- O card do catálogo testa todas as fotos/variantes do produto e usa automaticamente a primeira que carregar.
+- O modal faz a mesma seleção automática ao abrir.
+- Não é mais necessário clicar na miniatura para a foto principal aparecer.
+- Variantes 2560/1800/800 continuam sendo tratadas como a mesma foto.
+- Miniaturas inválidas ficam ocultas.
+- Se só uma foto válida restar, a faixa de miniaturas é escondida.
+- Mantém a correção da intro de balões/confetes da V9.
+- Cache atualizado para v10.
+
+## Aplicar
+Extraia por cima da pasta `leal-festas-site`, aceitando substituir os arquivos.
+
+Depois:
+```powershell
+git add .
+git commit -m "Corrige selecao automatica das fotos"
+git push
+```
+
+Não é necessário subir novamente a foto que já aparece ao clicar na miniatura.
