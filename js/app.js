@@ -248,13 +248,34 @@
 
   function buildOrderMessage() {
     const items=Object.entries(cart).map(([id,qty])=>({p:getProduct(id),qty})).filter(x=>x.p);
-    const lines=[`Olá! Gostaria de solicitar um orçamento na ${BRAND_NAME} 🎉`, '', '🛒 *Itens selecionados:*'];
-    items.forEach(({p,qty})=>{
-      const unit = p.unidade ? `/${p.unidade}` : '';
-      const price = Number.isFinite(Number(p.preco)) && Number(p.preco) > 0 ? ` — ${money(p.preco)}${unit}` : ' — valor sob consulta';
-      lines.push(`• ${qty}x ${p.nome}${price}`);
-    });
-    lines.push('', 'Gostaria de verificar disponibilidade e o valor final.', '', '_Pedido montado pelo site Leal D’Coração._');
+    function buildOrderMessage() {
+  const items = Object.entries(cart)
+    .map(([id,qty]) => ({p:getProduct(id),qty}))
+    .filter(x => x.p);
+
+  const lines = [
+    'Olá! Gostaria de solicitar um orçamento.',
+    '',
+    '*Itens selecionados:*'
+  ];
+
+  items.forEach(({p,qty}) => {
+    const unit = p.unidade ? `/${p.unidade}` : '';
+    const price =
+      Number.isFinite(Number(p.preco)) && Number(p.preco) > 0
+        ? ` — ${money(p.preco)}${unit}`
+        : ' — valor sob consulta';
+
+    lines.push(`• ${qty}x ${p.nome}${price}`);
+  });
+
+  lines.push(
+    '',
+    'Pode me informar a disponibilidade e o valor final?'
+  );
+
+  return lines.join('\n');
+}
     return lines.join('\n');
   }
 
