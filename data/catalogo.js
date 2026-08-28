@@ -1,4 +1,4 @@
-// Catálogo gerado pelo Leal D’Coração Admin em 28/08/2026, 08:43:50
+// Catálogo gerado pelo Leal D’Coração Admin em 28/08/2026, 09:09:06
 // Para esconder um item: ativo: false | Para destacar: destaque: true
 window.LEAL_CATALOGO = [
   {
@@ -40,7 +40,7 @@ window.LEAL_CATALOGO = [
     "nome": "Kit Princesa",
     "categoria": "kits",
     "categoriaNome": "Kits de Festa",
-    "preco": 279.9,
+    "preco": 199.99,
     "unidade": "kit",
     "destaque": true,
     "ativo": true,
@@ -56,8 +56,12 @@ window.LEAL_CATALOGO = [
     "complementos": [],
     "imagens": [
       {
-        "src": "public/images/catalogo/kit-princesa/134286340820828625.jpg",
-        "alt": "Kit Princesa"
+        "alt": "Kit Princesa — foto 1",
+        "variantes": {
+          "sm": "public/images/catalogo/kit-princesa/01-133599247332355936-800.webp",
+          "md": "public/images/catalogo/kit-princesa/01-133599247332355936-1800.webp",
+          "xl": "public/images/catalogo/kit-princesa/01-133599247332355936-2560.webp"
+        }
       }
     ]
   },
@@ -66,24 +70,28 @@ window.LEAL_CATALOGO = [
     "nome": "Kit Stitch",
     "categoria": "kits",
     "categoriaNome": "Kits de Festa",
-    "preco": 259.9,
+    "preco": 299.99,
     "unidade": "kit",
     "destaque": false,
     "ativo": true,
-    "demo": true,
-    "descricao": "Uma montagem divertida em azul e rosa para um dos temas infantis mais queridos.",
+    "demo": false,
+    "descricao": "Uma montagem divertida em azul e rosa para um dos temas infantis mais queri",
     "inclui": [
       "Painel temático",
       "Mesas decorativas",
       "Bandejas",
       "Tapete",
-      "Displays"
+      "Disp"
     ],
     "complementos": [],
     "imagens": [
       {
-        "src": "public/images/catalogo/kit-stitch/134301015538512633.jpg",
-        "alt": "Kit Stitch"
+        "alt": "Kit Stitch — foto 1",
+        "variantes": {
+          "sm": "public/images/catalogo/kit-stitch/01-134286340820828625-800.webp",
+          "md": "public/images/catalogo/kit-stitch/01-134286340820828625-1800.webp",
+          "xl": "public/images/catalogo/kit-stitch/01-134286340820828625-2560.webp"
+        }
       }
     ]
   },
