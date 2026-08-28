@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
   <title>Leal D’Coração Admin — Catálogo</title>
-  <link rel="stylesheet" href="admin.css" />
+  <link rel="stylesheet" href="admin.css?v=11" />
 </head>
 <body>
   <header class="topbar">
@@ -14,9 +14,8 @@
       <small>ADMIN • CATÁLOGO</small>
     </div>
     <div class="top-actions">
-      <button id="resetBtn" class="btn ghost">Recarregar catálogo</button>
-      <button id="copyBtn" class="btn ghost">Copiar catalogo.js</button>
-      <button id="downloadBtn" class="btn primary">Baixar catalogo.js</button>
+      <button id="resetBtn" class="btn ghost">Descartar rascunho</button>
+      <button id="packageBtn" class="btn primary">⬇ Baixar atualização completa</button>
     </div>
   </header>
 
@@ -27,14 +26,18 @@
         <button id="newBtn" class="round" title="Novo produto">+</button>
       </div>
       <div id="productList" class="product-list"></div>
-      <p class="local-note">As alterações ficam salvas neste navegador até você baixar o novo <strong>catalogo.js</strong>. A ferramenta não publica nada sozinha.</p>
+      <div class="workflow-note">
+        <strong>Fluxo simples</strong>
+        <span>Edite quantos produtos quiser. Tudo é salvo automaticamente neste navegador.</span>
+        <span>No final, use <b>Baixar atualização completa</b> uma única vez.</span>
+      </div>
     </aside>
 
     <section class="editor">
       <div id="emptyEditor" class="empty-editor">
         <div>🎂</div>
         <h1>Selecione um item</h1>
-        <p>Edite produtos, ordem, destaque, publicação e fotos.</p>
+        <p>Altere os dados e escolha as fotos. O Admin cuida do resto.</p>
       </div>
 
       <form id="productForm" class="product-form" hidden>
@@ -46,6 +49,8 @@
             <button type="button" id="deleteBtn" class="btn danger">Excluir</button>
           </div>
         </div>
+
+        <div class="autosave-line"><span class="autosave-dot"></span><span id="saveStatus">Alterações salvas automaticamente.</span></div>
 
         <div class="status-row">
           <label class="switch-line"><input id="ativo" type="checkbox" /><span>Publicado</span></label>
@@ -78,24 +83,35 @@ Tapete"></textarea></label>
 pintura-facial
 cadeira-plastica"></textarea></label>
 
-        <div class="photos-head"><div><span class="eyebrow">Galeria</span><h2>Fotos</h2></div><div class="photo-actions"><button type="button" id="optimizePhotoBtn" class="btn primary">✨ Otimizar fotos originais</button><button type="button" id="addPhotoBtn" class="btn ghost">📁 Adicionar fotos prontas</button></div></div>
-        <p class="help">“Otimizar fotos originais” gera versões WebP em 800 / 1800 / 2560 px com qualidade alta. Se o navegador permitir acesso à pasta do projeto, elas são gravadas direto em <strong>public/images/catalogo/ID-DO-PRODUTO/</strong>. No Admin online do Render, quando a gravação direta não estiver disponível, será baixado <strong>um único ZIP</strong> já com essa estrutura pronta para extrair sobre o projeto.</p>
-        <p class="help"><strong>“Adicionar fotos prontas”</strong> serve para selecionar WebPs que já estão no seu projeto. O Admin reconhece automaticamente arquivos terminados em <strong>-800.webp</strong>, <strong>-1800.webp</strong> e <strong>-2560.webp</strong> e monta a galeria.</p>
-        <input id="optimizeFileInput" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden />
-        <input id="readyPhotoInput" type="file" accept="image/webp,.webp" multiple hidden />
-        <div id="optimizerStatus" class="optimizer-status" hidden></div>
-        <div id="photosEditor" class="photos-editor"></div>
+        <section class="simple-photos">
+          <div class="photos-head">
+            <div><span class="eyebrow">Galeria</span><h2>Fotos do produto</h2></div>
+            <button type="button" id="selectPhotosBtn" class="btn primary">📸 Selecionar fotos do produto</button>
+          </div>
+          <p class="help">Escolha de uma vez <strong>todas as fotos que deseja manter neste produto</strong>. Elas só serão convertidas quando você gerar o pacote final. Se não selecionar novas fotos, as atuais são mantidas.</p>
+          <input id="productPhotoInput" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden />
+          <div id="photoSelectionStatus" class="photo-selection-status"></div>
+          <div id="photoPreviewGrid" class="photo-preview-grid"></div>
+        </section>
 
-        <div class="savebar">
-          <span id="saveStatus">Edite e salve o item.</span>
-          <button type="submit" class="btn primary large">Salvar alterações do item</button>
+        <div class="package-hint">
+          <strong>Quando terminar:</strong>
+          <span>Não precisa salvar item por item nem baixar catalogo.js separado. Clique em <b>Baixar atualização completa</b> no topo.</span>
         </div>
       </form>
     </section>
   </main>
 
+  <div id="packageOverlay" class="package-overlay" hidden>
+    <div class="package-card">
+      <div class="spinner"></div>
+      <h2>Preparando atualização</h2>
+      <p id="packageProgress">Organizando catálogo…</p>
+    </div>
+  </div>
+
   <div id="toast" class="toast"></div>
   <script src="../data/catalogo.js"></script>
-  <script src="admin.js"></script>
+  <script src="admin.js?v=11"></script>
 </body>
 </html>

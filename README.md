@@ -1,25 +1,35 @@
-# Atualização V10 — seleção automática de foto válida
+# Leal D’Coração — Admin v11 simplificado
 
-Esta atualização corrige o caso em que o catálogo/modal começa com um slot de imagem inválido e só mostra a foto real depois de clicar na miniatura.
+## O que mudou
 
-## O que muda
-- O card do catálogo testa todas as fotos/variantes do produto e usa automaticamente a primeira que carregar.
-- O modal faz a mesma seleção automática ao abrir.
-- Não é mais necessário clicar na miniatura para a foto principal aparecer.
-- Variantes 2560/1800/800 continuam sendo tratadas como a mesma foto.
-- Miniaturas inválidas ficam ocultas.
-- Se só uma foto válida restar, a faixa de miniaturas é escondida.
-- Mantém a correção da intro de balões/confetes da V9.
-- Cache atualizado para v10.
+O fluxo do Admin foi reduzido para duas ações principais:
 
-## Aplicar
-Extraia por cima da pasta `leal-festas-site`, aceitando substituir os arquivos.
+1. Edite os dados dos produtos e selecione as fotos originais de cada produto.
+2. No final, clique em **Baixar atualização completa**.
 
-Depois:
+As alterações de texto/preço/status são salvas automaticamente no navegador.
+
+O ZIP gerado pelo Admin contém, em um único pacote:
+
+- `data/catalogo.js`
+- `public/images/catalogo/<id-do-produto>/...-800.webp`
+- `public/images/catalogo/<id-do-produto>/...-1800.webp`
+- `public/images/catalogo/<id-do-produto>/...-2560.webp`
+
+Selecione **todas as fotos que deseja manter** em cada produto. Se você não selecionar novas fotos para um produto, a galeria existente é preservada.
+
+## Publicação
+
+1. Extraia o ZIP gerado pelo Admin sobre a raiz `leal-festas-site`.
+2. Aceite substituir os arquivos.
+3. Rode:
+
 ```powershell
 git add .
-git commit -m "Corrige selecao automatica das fotos"
+git commit -m "Atualiza catalogo e fotos Leal D Coracao"
 git push
 ```
 
-Não é necessário subir novamente a foto que já aparece ao clicar na miniatura.
+## Observação importante
+
+As fotos originais selecionadas ficam apenas na memória da aba do Admin, pois o navegador não pode guardá-las em `localStorage`. Gere o pacote antes de fechar/recarregar a página. O Admin avisa caso você tente sair com fotos pendentes.
