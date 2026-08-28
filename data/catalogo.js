@@ -1,4 +1,4 @@
-// Catálogo gerado pelo Leal D’Coração Admin em 28/08/2026, 09:09:06
+// Catálogo gerado pelo Leal D’Coração Admin em 28/08/2026, 09:24:45
 // Para esconder um item: ativo: false | Para destacar: destaque: true
 window.LEAL_CATALOGO = [
   {
@@ -100,11 +100,11 @@ window.LEAL_CATALOGO = [
     "nome": "Arco Orgânico de Balões",
     "categoria": "baloes",
     "categoriaNome": "Balões",
-    "preco": 180,
+    "preco": 77,
     "unidade": "serviço",
     "destaque": true,
     "ativo": true,
-    "demo": true,
+    "demo": false,
     "descricao": "Composição de balões em diferentes tamanhos e cores, montada de acordo com a identidade da festa.",
     "inclui": [
       "Definição de paleta",
@@ -115,12 +115,11 @@ window.LEAL_CATALOGO = [
     "complementos": [],
     "imagens": [
       {
-        "src": "public/images/demo/baloes-1.svg",
-        "alt": "Demonstração de arco orgânico de balões"
-      },
-      {
-        "src": "public/images/demo/baloes-2.svg",
-        "alt": "Demonstração de detalhes de balões"
+        "alt": "Arco Orgânico de Balões — foto 1",
+        "variantes": {
+          "sm": "public/images/catalogo/arco-organico/01-thumb-1920-941898-800.webp",
+          "md": "public/images/catalogo/arco-organico/01-thumb-1920-941898-1800.webp"
+        }
       }
     ]
   },
@@ -129,11 +128,11 @@ window.LEAL_CATALOGO = [
     "nome": "Pintura Facial",
     "categoria": "servicos",
     "categoriaNome": "Serviços",
-    "preco": 160,
+    "preco": 99,
     "unidade": "serviço",
     "destaque": false,
     "ativo": true,
-    "demo": true,
+    "demo": false,
     "descricao": "Uma atração divertida para crianças, com desenhos e opções combinadas de acordo com a faixa etária e o evento.",
     "inclui": [
       "Materiais para pintura",
@@ -143,8 +142,12 @@ window.LEAL_CATALOGO = [
     "complementos": [],
     "imagens": [
       {
-        "src": "public/images/demo/pintura-1.svg",
-        "alt": "Demonstração de pintura facial"
+        "alt": "Pintura Facial — foto 1",
+        "variantes": {
+          "sm": "public/images/catalogo/pintura-facial/01-134315471161146523-800.webp",
+          "md": "public/images/catalogo/pintura-facial/01-134315471161146523-1800.webp",
+          "xl": "public/images/catalogo/pintura-facial/01-134315471161146523-2560.webp"
+        }
       }
     ]
   },
@@ -153,11 +156,11 @@ window.LEAL_CATALOGO = [
     "nome": "Cadeiras para Eventos",
     "categoria": "estrutura",
     "categoriaNome": "Estrutura",
-    "preco": 5,
+    "preco": 4,
     "unidade": "unidade",
     "destaque": false,
     "ativo": true,
-    "demo": true,
+    "demo": false,
     "descricao": "Cadeiras para complementar a estrutura do evento. Quantidade e logística são confirmadas no orçamento.",
     "inclui": [
       "Locação por unidade",
@@ -167,8 +170,12 @@ window.LEAL_CATALOGO = [
     "complementos": [],
     "imagens": [
       {
-        "src": "public/images/demo/cadeiras-1.svg",
-        "alt": "Demonstração de cadeiras para eventos"
+        "alt": "Cadeiras para Eventos — foto 1",
+        "variantes": {
+          "sm": "public/images/catalogo/cadeira-plastica/01-134301015538512633-800.webp",
+          "md": "public/images/catalogo/cadeira-plastica/01-134301015538512633-1800.webp",
+          "xl": "public/images/catalogo/cadeira-plastica/01-134301015538512633-2560.webp"
+        }
       }
     ]
   },
